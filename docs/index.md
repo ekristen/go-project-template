@@ -52,7 +52,21 @@ cosign generate-key-pair
 
 ## Documentation
 
-The project is built to have the documentation right along side the code in the `docs/` directory.
+The project is built to have the documentation right alongside the code in the `docs/` directory leveraging Mkdocs Material.
 
-This README.md is currently copied to `docs/index.md` and the documentation is automatically published to `gh-pages`
-for the repository.
+In the root of the project exists mkdocs.yml which drives the configuration for the documentation.
+
+This README.md is currently copied to `docs/index.md` and the documentation is automatically published to the GitHub
+pages location for this repository using a GitHub Action workflow. It does not use the `gh-pages` branch.
+
+### Running Locally
+
+```console
+make docs-serve
+```
+
+OR (if you have docker)
+
+```console
+docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material
+```
