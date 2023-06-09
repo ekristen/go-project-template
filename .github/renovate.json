@@ -4,7 +4,10 @@
   ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "matchCurrentVersion": "!/^0/",
       "automerge": true
     },
@@ -55,7 +58,7 @@
         "^.github/workflows/.*"
       ],
       "matchStrings": [
-        "go-version: (?<currentValue>.*?)\n"
+        "go-version: (?<currentValue>.*?).x\n"
       ],
       "depNameTemplate": "golang",
       "datasourceTemplate": "docker"
