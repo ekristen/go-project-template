@@ -1,0 +1,64 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
+    },
+    {
+      "matchDatasources": [
+        "go",
+        "docker"
+      ],
+      "groupName": "kubernetes",
+      "groupSlug": "kubernetes",
+      "matchPackagePatterns": [
+        "^k8s.io/"
+      ],
+      "matchPackageNames": [
+        "bitnami/kubectl"
+      ]
+    },
+    {
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchUpdateTypes": [
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": [
+        "^golang.*"
+      ],
+      "groupName": "golang",
+      "groupSlug": "golang"
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        ".*.go$"
+      ],
+      "matchStrings": [
+        "\"(?<currentValue>.*)\" \/\/ renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "fileMatch": [
+        "^.github/workflows/.*"
+      ],
+      "matchStrings": [
+        "go-version: (?<currentValue>.*?)\n"
+      ],
+      "depNameTemplate": "golang",
+      "datasourceTemplate": "docker"
+    }
+  ]
+}

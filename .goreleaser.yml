@@ -1,0 +1,80 @@
+release:
+  github:
+    owner: ekristen
+    name: go-project-template
+  prerelease: auto
+builds:
+  - id: template
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -s
+      - -w
+      - -X '{{ .ModulePath }}/pkg/common.SUMMARY=v{{ .Version }}'
+      - -X '{{ .ModulePath }}/pkg/common.BRANCH={{ .Branch }}'
+      - -X '{{ .ModulePath }}/pkg/common.VERSION={{ .Tag }}'
+      - -X '{{ .ModulePath }}/pkg/common.COMMIT={{ .Commit }}'
+archives:
+  - id: template
+    builds:
+      - template
+    name_template: "{{ .ProjectName }}-utils-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ .Arm }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+dockers:
+  - id: template
+    ids:
+      - template
+    use: buildx
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile
+    image_templates:
+      - ghcr.io/ekristen/go-project-template:v{{ .Version }}
+      - ghcr.io/ekristen/go-project-template:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-{{ .Timestamp }}
+    build_flag_templates:
+      - "--target=goreleaser"
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source=https://github.com/ekristen/go-project-template"
+      - "--platform=linux/amd64"
+signs:
+  - cmd: cosign # Sign with Password
+    stdin: "{{ .Env.COSIGN_PASSWORD }}"
+    args: ["sign-blob", "--yes", "--tlog-upload=false", "--key=cosign.key", "--output=${signature}", "${artifact}"]
+    artifacts: all
+  #- ids:
+  #    - template
+  #  cmd: cosign
+  #  signature: "${artifact}.sig"
+  #  certificate: "${artifact}.pem"
+  #  args: ["sign-blob", "--yes", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
+  #  artifacts: all
+docker_signs:
+  - ids: # Sign With Password
+      - template
+    artifacts: all
+    stdin: "{{ .Env.COSIGN_PASSWORD }}"
+  #- ids:
+  #    - template
+  #  artifacts: all
+  #  cmd: cosign
+  #  args: ["sign", "--yes", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: '{{ trimprefix .Summary "v" }}'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

@@ -1,0 +1,20 @@
+name: auto-release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .github/**
+      - docs/**
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        with:
+          publish: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_SECRET }}
