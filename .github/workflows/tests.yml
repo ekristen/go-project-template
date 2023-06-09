@@ -1,0 +1,22 @@
+name: tests
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.19
+      - name: download go mods
+        working-directory: test/src
+        run: |
+          go mod download
+      - name: run go tests
+        working-directory: test/src
+        run: |
+          go test -timeout 60s -run .
