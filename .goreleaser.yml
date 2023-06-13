@@ -4,7 +4,7 @@ release:
     name: go-project-template
   prerelease: auto
 builds:
-  - id: template
+  - id: go-project-template
     goos:
       - linux
       - darwin
@@ -19,17 +19,17 @@ builds:
       - -X '{{ .ModulePath }}/pkg/common.VERSION={{ .Tag }}'
       - -X '{{ .ModulePath }}/pkg/common.COMMIT={{ .Commit }}'
 archives:
-  - id: template
+  - id: go-project-template
     builds:
-      - template
-    name_template: "{{ .ProjectName }}-utils-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ .Arm }}"
+      - go-project-template
+    name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ .Arm }}"
     format_overrides:
       - goos: windows
         format: zip
 dockers:
-  - id: template
+  - id: go-project-template
     ids:
-      - template
+      - go-project-template
     use: buildx
     goos: linux
     goarch: amd64
@@ -44,12 +44,12 @@ dockers:
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source=https://github.com/ekristen/go-project-template"
+      - "--label=org.opencontainers.image.source={{replace (replace (replace .GitURL \"git@\" \"https://\") \".git\" \"\") \"github.com:\" \"github.com/\"}}"
       - "--platform=linux/amd64"
 signs:
   - cmd: cosign # Sign with Password
     stdin: "{{ .Env.COSIGN_PASSWORD }}"
-    args: ["sign-blob", "--yes", "--tlog-upload=false", "--key=cosign.key", "--output=${signature}", "${artifact}"]
+    args: ["sign-blob", "--yes", "--tlog-upload=false", "--key=cosign.key", "--output-signature=${signature}", "${artifact}"]
     artifacts: all
   #- ids:
   #    - template
@@ -60,7 +60,7 @@ signs:
   #  artifacts: all
 docker_signs:
   - ids: # Sign With Password
-      - template
+      - go-project-template
     artifacts: all
     stdin: "{{ .Env.COSIGN_PASSWORD }}"
   #- ids:

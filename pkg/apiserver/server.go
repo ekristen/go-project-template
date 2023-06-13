@@ -3,11 +3,11 @@ package apiserver
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 type Options struct {
@@ -29,8 +29,12 @@ func RunServer(ctx context.Context, opts *Options) error {
 	// Below this point is where the server is started and graceful shutdown occurs.
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", opts.Port),
-		Handler: router,
+		Addr:              fmt.Sprintf(":%d", opts.Port),
+		Handler:           router,
+		ReadTimeout:       1 * time.Second,
+		WriteTimeout:      1 * time.Second,
+		IdleTimeout:       30 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 
 	go func() {
@@ -45,9 +49,7 @@ func RunServer(ctx context.Context, opts *Options) error {
 	opts.Log.Info("shutting down api server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
 		opts.Log.WithError(err).Error("unable to shutdown the api server gracefully")

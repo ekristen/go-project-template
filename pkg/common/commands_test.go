@@ -1,9 +1,10 @@
 package common
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
-	"testing"
 )
 
 func TestCommands(t *testing.T) {

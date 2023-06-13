@@ -7,6 +7,8 @@ This is an opinionated go project template to use as a starting point for new pr
 - Builds with [GoReleaser](https://goreleaser.com)
   - Automated with GitHub Actions
   - Signed with Cosign (providing you generate a private key)
+- Linting with [golangci-lint](https://golangci-lint.run/)
+  - Automated with GitHub Actions
 - Builds with Docker
   - While designed to use goreleaser, you can still just run `docker build`
 - Opinionated Layout
@@ -20,6 +22,12 @@ This is an opinionated go project template to use as a starting point for new pr
 - Stubbed out Go Tests
   - They are not comprehensive
 
+### Opinionated Decisions
+
+- Uses `init` functions for registering commands globally.
+  - This allows for multiple `main` package files to be written and include different commands.
+  - Allows the command code to remain isolated from each other and a simple import to include the command.
+
 ## Building
 
 The following will build binaries in snapshot order.
@@ -32,8 +40,9 @@ goreleaser --clean --snapshot
 
 1. Rename Repository
 2. Generate Cosign Keys
-3. Update `.goreleaser.yml`
-4. Update `main.go`  
+3. Update `.goreleaser.yml`, search/replace go-project-template with new project name, adjust GitHub owner
+4. Update `main.go`,
+5. Update `go.mod`, rename go project (using IDE is best so renames happen across all files)
 
 ### Signing
 

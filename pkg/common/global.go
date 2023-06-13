@@ -2,10 +2,11 @@ package common
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
 	"path"
 	"runtime"
+
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 )
 
 func Flags() []cli.Flag {
