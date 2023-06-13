@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/rancher/wrangler/pkg/signals"
 	"os"
 	"path"
 
+	"github.com/rancher/wrangler/pkg/signals"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 
