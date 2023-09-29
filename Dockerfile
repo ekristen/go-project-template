@@ -4,7 +4,7 @@ FROM debian:bullseye-slim as base
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN useradd -r -u 999 -d /home/go-project-template go-project-template
 
-FROM ghcr.io/acorn-io/images-mirror/golang:1.20 AS build
+FROM ghcr.io/acorn-io/images-mirror/golang:1.21 AS build
 COPY / /src
 WORKDIR /src
 RUN \
