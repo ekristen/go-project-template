@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.3-labs
+# syntax=docker/dockerfile:1.6-labs
 
 FROM debian:bullseye-slim as base
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
