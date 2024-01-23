@@ -33,7 +33,8 @@
         "pin",
         "digest"
       ],
-      "automerge": true
+      "automerge": true,
+      "labels": ["patch"]
     },
     {
       "matchPackagePatterns": [
@@ -50,7 +51,8 @@
         "action"
       ],
       "matchCurrentVersion": "!/^0/",
-      "automerge": true
+      "automerge": true,
+      "labels": ["bot/skip-changelog"]
     }
   ],
   "regexManagers": [
