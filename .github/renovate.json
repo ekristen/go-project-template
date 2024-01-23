@@ -1,6 +1,6 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "packageRules": [
     {
@@ -41,6 +41,16 @@
       ],
       "groupName": "golang",
       "groupSlug": "golang"
+    },
+    {
+      "matchFileNames": [
+        ".github/workflows/*.yml"
+      ],
+      "matchDepTypes": [
+        "action"
+      ],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true
     }
   ],
   "regexManagers": [
