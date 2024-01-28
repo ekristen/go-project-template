@@ -10,8 +10,11 @@ on:
       - edited
       - synchronize
 
+permissions:
+  pull-requests: read
+
 jobs:
-  main:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: amannn/action-semantic-pull-request@v1.2.0
