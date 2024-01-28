@@ -1,21 +1,22 @@
 name: goreleaser
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
+      - next
     tags:
-      - "*.*.*"
+      - "*"
+  release:
+    types:
+      - published
 
 permissions:
   contents: write
   packages: write
 
 jobs:
-  goreleaser:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +25,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/checkout@v4
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
         with:
           fetch-depth: 0
       - name: setup-go
@@ -69,14 +70,14 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --rm-dist ${{ env.GORELEASER_ARGS }}
+          args: release --clean --release-notes release-notes.md ${{ env.GORELEASER_ARGS }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       - name: push docker images (for branches)
         if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
         run: |
-          docker images --format "{{.Repository}}:{{.Tag}}" | grep "ekristen/go-project-template" | xargs -L1 docker push
+          docker images --format "{{.Repository}}:{{.Tag}}" | grep "ekristen/test-aws-nuke" | xargs -L1 docker push
       - name: upload artifacts
         if: github.event.pull_request.base.ref == 'main'
         uses: actions/upload-artifact@v4
