@@ -44,12 +44,20 @@ dockers:
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--label=org.opencontainers.image.source={{replace (replace (replace .GitURL \"git@\" \"https://\") \".git\" \"\") \"github.com:\" \"github.com/\"}}"
+      - '--label=org.opencontainers.image.source={{replace (replace (replace .GitURL "git@" "https://") ".git" "") "github.com:" "github.com/"}}'
       - "--platform=linux/amd64"
 signs:
   - cmd: cosign # Sign with Password
     stdin: "{{ .Env.COSIGN_PASSWORD }}"
-    args: ["sign-blob", "--yes", "--tlog-upload=false", "--key=cosign.key", "--output-signature=${signature}", "${artifact}"]
+    args:
+      [
+        "sign-blob",
+        "--yes",
+        "--tlog-upload=false",
+        "--key=cosign.key",
+        "--output-signature=${signature}",
+        "${artifact}",
+      ]
     artifacts: all
   #- ids:
   #    - template
@@ -73,8 +81,4 @@ checksum:
 snapshot:
   name_template: '{{ trimprefix .Summary "v" }}'
 changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
+  skip: true
