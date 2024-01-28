@@ -12,7 +12,7 @@ This is an opinionated go project template to use as a starting point for new pr
 - Builds with Docker
   - While designed to use goreleaser, you can still just run `docker build`
 - Opinionated Layout
-  - Never use `internal/` folder 
+  - Never use `internal/` folder
   - Everything is under `pkg/` folder
 - Automatic Dependency Management with [Renovate](https://github.com/renovatebot/renovate)
 - Automatic Releases with [Release Drafter](https://github.com/release-drafter/release-drafter)
@@ -55,13 +55,13 @@ goreleaser --clean --snapshot
 
 ### Releases
 
-In order for Release Drafter and GoReleaser to work properly you have to create a PAT to run Release Drafter
-so it's actions against the repository can trigger other workflows. Unfortunately there is no way to trigger 
+In order for Semantic Releases and GoReleaser to work properly you have to create a PAT to run Semantic Release
+so it's actions against the repository can trigger other workflows. Unfortunately there is no way to trigger
 a workflow from a workflow if both are run by the automatically generated GitHub Actions secret.
 
 1. Create PAT that has write contents permissions to the repository
 2. Create GitHub Action Secret
-   - `RELEASE_DRAFTER_SECRET` -> populated with PAT from step 1
+   - `SEMANTIC_GITHUB_TOKEN` -> populated with PAT from step 1
 3. Done
 
 ## Documentation
