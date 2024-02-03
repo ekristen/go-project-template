@@ -8,9 +8,6 @@ on:
       - next
     tags:
       - "*"
-  pull_request:
-    branches:
-      - main
   release:
     types:
       - published
@@ -76,7 +73,6 @@ jobs:
           args: release --clean ${{ env.GORELEASER_ARGS }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       - name: push docker images (for branches)
         if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
         run: |
