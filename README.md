@@ -86,6 +86,16 @@ cosign generate-key-pair
 4. Update `main.go`,
 5. Update `go.mod`, rename go project (using IDE is best so renames happen across all files)
 
+### Docker
+
+The Dockerfile is set up to build the project and then copy the artifacts from the build into the final image. It is
+also configured to allow you to just run `docker build` directly if you do not want to use GoReleaser. 
+
+To make things easier and faster, the Dockerfile has a default build argument set to `go-project-template`. GoReleaser
+will pass the new project name down (if you update the `.goreleaser.yml` file) and the Dockerfile will use that instead.
+
+However, it would be better longer term to update this argument in the file or remove it all together.
+
 ### Signing
 
 Signing happens via cosign's keyless features using the GitHub Actions OIDC provider.
