@@ -5,18 +5,15 @@ on:
       - main
       - next
 
-permissions:
-  contents: read # for checkout
-
 jobs:
   release:
     name: release
     runs-on: ubuntu-latest
     permissions:
-      contents: write # to be able to publish a GitHub release
-      issues: write # to be able to comment on released issues
-      pull-requests: write # to be able to comment on released pull requests
-      id-token: write # to enable use of OIDC for npm provenance
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -27,8 +24,6 @@ jobs:
         with:
           node-version: "lts/*"
       - name: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.SEMANTIC_GITHUB_TOKEN }}
         run: |
           npx \
             -p @semantic-release/commit-analyzer \
