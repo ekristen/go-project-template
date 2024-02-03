@@ -47,35 +47,19 @@ dockers:
       - '--label=org.opencontainers.image.source={{replace (replace (replace .GitURL "git@" "https://") ".git" "") "github.com:" "github.com/"}}'
       - "--platform=linux/amd64"
 signs:
-  - cmd: cosign # Sign with Password
-    stdin: "{{ .Env.COSIGN_PASSWORD }}"
-    args:
-      [
-        "sign-blob",
-        "--yes",
-        "--tlog-upload=false",
-        "--key=cosign.key",
-        "--output-signature=${signature}",
-        "${artifact}",
-      ]
+  - ids:
+      - go-project-template
+    cmd: cosign
+    signature: "${artifact}.sig"
+    certificate: "${artifact}.pem"
+    args: ["sign-blob", "--yes", "--oidc-provider=github", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
     artifacts: all
-  #- ids:
-  #    - template
-  #  cmd: cosign
-  #  signature: "${artifact}.sig"
-  #  certificate: "${artifact}.pem"
-  #  args: ["sign-blob", "--yes", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
-  #  artifacts: all
 docker_signs:
-  - ids: # Sign With Password
+  - ids:
       - go-project-template
     artifacts: all
-    stdin: "{{ .Env.COSIGN_PASSWORD }}"
-  #- ids:
-  #    - template
-  #  artifacts: all
-  #  cmd: cosign
-  #  args: ["sign", "--yes", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
+    cmd: cosign
+    args: ["sign", "--yes", "--oidc-provider=github", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
 checksum:
   name_template: "checksums.txt"
 snapshot:

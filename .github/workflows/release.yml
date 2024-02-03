@@ -1,6 +1,7 @@
 name: goreleaser
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -14,6 +15,7 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write
 
 jobs:
   release:
@@ -45,9 +47,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: install cosign
-        uses: sigstore/cosign-installer@main
-        with:
-          cosign-release: "v2.0.1"
+        uses: sigstore/cosign-installer@v3
       - name: setup cosign
         run: |
           echo "${COSIGN_KEY}" > "$GITHUB_WORKSPACE/cosign.key"
@@ -73,7 +73,6 @@ jobs:
           args: release --clean ${{ env.GORELEASER_ARGS }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
       - name: push docker images (for branches)
         if: github.ref == 'refs/heads/main' || github.event.pull_request.base.ref == 'main'
         run: |

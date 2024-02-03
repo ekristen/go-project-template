@@ -33,8 +33,10 @@ This is an opinionated go project template to use as a starting point for new pr
 The following will build binaries in snapshot order.
 
 ```console
-goreleaser --clean --snapshot
+goreleaser --clean --snapshot --skip sign
 ```
+
+**Note:** we are skipping signing because this project uses cosign's keyless signing with GitHub Actions OIDC provider.
 
 ## Configure
 
@@ -46,12 +48,7 @@ goreleaser --clean --snapshot
 
 ### Signing
 
-1. Create a password
-   - Recommend exporting in environment as `COSIGN_PASSWORD` using something like [direnv](http://direnv.net)
-2. Generate cosign keys `cosign generate-key-pair`
-3. Create GitHub Action Secrets
-   - `COSIGN_KEY` -> populate with cosign.key value
-   - `COSIGN_PASSWORD` -> populate with password from step 1
+Signing happens via cosign's keyless features using the GitHub Actions OIDC provider.
 
 ### Releases
 
@@ -59,7 +56,7 @@ In order for Semantic Releases and GoReleaser to work properly you have to creat
 so it's actions against the repository can trigger other workflows. Unfortunately there is no way to trigger
 a workflow from a workflow if both are run by the automatically generated GitHub Actions secret.
 
-1. Create PAT that has write contents permissions to the repository
+1. Create PAT that has content `write` permissions to the repository
 2. Create GitHub Action Secret
    - `SEMANTIC_GITHUB_TOKEN` -> populated with PAT from step 1
 3. Done
