@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: "lts/*"
       - name: release
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npx \
             -p @semantic-release/commit-analyzer \
