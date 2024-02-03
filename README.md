@@ -28,22 +28,30 @@ This is an opinionated go project template to use as a starting point for new pr
   - This allows for multiple `main` package files to be written and include different commands.
   - Allows the command code to remain isolated from each other and a simple import to include the command.
 
+### Multi-Platform Builds
+
+This project is designed to build for multiple platforms, including macOS, Linux, and Windows. It also supports
+multiple architectures including amd64 and arm64. 
+
+The goreleaser configuration is set up to build for all platforms and architectures by default. It even supports pushing
+multi-architecture docker manifests by default. Some knowledge about GoReleaser's configuration is required should you
+want to remove these capabilities.
+
 ### Apple Notary Signing
 
-This makes use of a tool called [quill](https://github.com/anchore/quill). There are couple parts to this, the default
-setup assumes you can use 1Password to store your secrets. If you don't have 1Password, you can use GitHub Secrets
-by themselves.
+This makes use of a tool called [quill](https://github.com/anchore/quill). To make use of this feature you will need
+to have an Apple Developer account and be able to create an Developer ID certificate.
 
-Goreleaser will automatically sign the binaries in adhoc mode when in snapshot mode, basically anytime it's not a tag.
+The workflow is designed to pull the necessary secrets from 1Password. This is done to keep the secrets out of the
+GitHub Actions logs. The secrets are pulled from 1Password if the event triggering the workflow is a tag **AND** the
+actor is the owner of the repository. This is to prevent forks from being able to pull the secrets and is an extra
+guard to help prevent theft.
 
-Otherwise, Goreleaser will trigger quill in sign and notarize mode which will sign and then notarize the binaries with
-Apple.
+GoReleaser is configured to always sign and notarize for macOS. However, it will not notarize if the build is a snapshot.
 
-The resulting uploaded binaries will automatically run on macOS systems without having to approve it under System
-Preferences, this is provided you've supplied to properly Apple Developer information to sign the binaries.
-
-The workflow is designed to only pull the secrets from 1Password if the event triggering the workflow is a tag **AND**
-the actor is the owner of the repository. See the comment in the workflow.
+If configured properly, the binaries located within the archives produced by GoReleaser will be signed and notarized
+by the Apple Notary Service and will automatically run on any macOS system without having to approve it under System
+Preferences.
 
 If you do not wish to use 1Password simply export the same environment variables using secrets to populate them. The 
 `QUILL_SIGN_P12` and `QUILL_NOTARY_KEY` need to be base64 encoded or paths to the actual files.
