@@ -2,22 +2,36 @@ release:
   github:
     owner: ekristen
     name: go-project-template
-  prerelease: auto
+env:
+  - REGISTRY=ghcr.io
+  - IMAGE=ekristen/go-project-template
 builds:
   - id: go-project-template
     goos:
       - linux
-      - darwin
       - windows
+      - darwin
     goarch:
       - amd64
+      - arm64
     ldflags:
       - -s
       - -w
+      - -extldflags="-static"
       - -X '{{ .ModulePath }}/pkg/common.SUMMARY=v{{ .Version }}'
       - -X '{{ .ModulePath }}/pkg/common.BRANCH={{ .Branch }}'
       - -X '{{ .ModulePath }}/pkg/common.VERSION={{ .Tag }}'
       - -X '{{ .ModulePath }}/pkg/common.COMMIT={{ .Commit }}'
+    hooks:
+      post:
+        - cmd: |
+            {{- if eq .Os "darwin" -}} 
+            quill sign-and-notarize "{{ .Path }}" --dry-run={{ .IsSnapshot }} --ad-hoc={{ .IsSnapshot }} -vv
+            {{- else -}}
+            true
+            {{- end -}}
+          env:
+            - QUILL_LOG_FILE=/tmp/quill-{{ .Target }}.log
 archives:
   - id: go-project-template
     builds:
@@ -27,7 +41,7 @@ archives:
       - goos: windows
         format: zip
 dockers:
-  - id: go-project-template
+  - id: linux-amd64
     ids:
       - go-project-template
     use: buildx
@@ -35,8 +49,8 @@ dockers:
     goarch: amd64
     dockerfile: Dockerfile
     image_templates:
-      - ghcr.io/ekristen/go-project-template:v{{ .Version }}
-      - ghcr.io/ekristen/go-project-template:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-{{ .Timestamp }}
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-amd64'
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-amd64-{{ .Timestamp }}'
     build_flag_templates:
       - "--target=goreleaser"
       - "--pull"
@@ -46,9 +60,38 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - '--label=org.opencontainers.image.source={{replace (replace (replace .GitURL "git@" "https://") ".git" "") "github.com:" "github.com/"}}'
       - "--platform=linux/amd64"
+  - id: linux-arm64
+    ids:
+      - go-project-template
+    use: buildx
+    goos: linux
+    goarch: arm64
+    dockerfile: Dockerfile
+    image_templates:
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-arm64'
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-arm64-{{ .Timestamp }}'
+    build_flag_templates:
+      - "--target=goreleaser"
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - '--label=org.opencontainers.image.source={{replace (replace (replace .GitURL "git@" "https://") ".git" "") "github.com:" "github.com/"}}'
+      - "--platform=linux/arm64"
+docker_manifests:
+  - name_template: '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}'
+    image_templates:
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-amd64'
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-arm64'
+  - name_template: '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-{{ .Timestamp }}'
+    image_templates:
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-amd64-{{ .Timestamp }}'
+      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-arm64-{{ .Timestamp }}'
 signs:
   - ids:
-      - go-project-template
+      - default
+      - darwin
     cmd: cosign
     signature: "${artifact}.sig"
     certificate: "${artifact}.pem"
@@ -56,7 +99,7 @@ signs:
     artifacts: all
 docker_signs:
   - ids:
-      - go-project-template
+      - default
     artifacts: all
     cmd: cosign
     args: ["sign", "--yes", "--oidc-provider=github", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
@@ -64,5 +107,6 @@ checksum:
   name_template: "checksums.txt"
 snapshot:
   name_template: '{{ trimprefix .Summary "v" }}'
+# We are skipping changelog because we are using semantic release
 changelog:
   skip: true

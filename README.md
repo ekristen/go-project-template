@@ -11,22 +11,42 @@ This is an opinionated go project template to use as a starting point for new pr
   - Automated with GitHub Actions
 - Builds with Docker
   - While designed to use goreleaser, you can still just run `docker build`
+- Apple Notary Signing Support
 - Opinionated Layout
   - Never use `internal/` folder
   - Everything is under `pkg/` folder
 - Automatic Dependency Management with [Renovate](https://github.com/renovatebot/renovate)
-- Automatic Releases with [Release Drafter](https://github.com/release-drafter/release-drafter)
+- Automatic [Semantic Releases](https://semantic-release.gitbook.io/)
 - Documentation with Material for MkDocs
 - API Server Example
   - Uses Gorilla Mux (yes it's been archived, still the best option)
-- Stubbed out Go Tests
-  - They are not comprehensive
+- Stubbed out Go Tests (**note:** they are not comprehensive)
 
 ### Opinionated Decisions
 
 - Uses `init` functions for registering commands globally.
   - This allows for multiple `main` package files to be written and include different commands.
   - Allows the command code to remain isolated from each other and a simple import to include the command.
+
+### Apple Notary Signing
+
+This makes use of a tool called [quill](https://github.com/anchore/quill). There are couple parts to this, the default
+setup assumes you can use 1Password to store your secrets. If you don't have 1Password, you can use GitHub Secrets
+by themselves.
+
+Goreleaser will automatically sign the binaries in adhoc mode when in snapshot mode, basically anytime it's not a tag.
+
+Otherwise, Goreleaser will trigger quill in sign and notarize mode which will sign and then notarize the binaries with
+Apple.
+
+The resulting uploaded binaries will automatically run on macOS systems without having to approve it under System
+Preferences, this is provided you've supplied to properly Apple Developer information to sign the binaries.
+
+The workflow is designed to only pull the secrets from 1Password if the event triggering the workflow is a tag **AND**
+the actor is the owner of the repository. See the comment in the workflow.
+
+If you do not wish to use 1Password simply export the same environment variables using secrets to populate them. The 
+`QUILL_SIGN_P12` and `QUILL_NOTARY_KEY` need to be base64 encoded or paths to the actual files.
 
 ## Building
 
@@ -38,10 +58,22 @@ goreleaser --clean --snapshot --skip sign
 
 **Note:** we are skipping signing because this project uses cosign's keyless signing with GitHub Actions OIDC provider.
 
+You can opt to generate a cosign keypair locally and set the following environment variables, and then you can run
+`goreleaser --clean --snapshot` without the `--skip sign` flag to get signed artifacts.
+
+Environment Variables:
+- 
+- COSIGN_PASSWORD
+- COSIGN_KEY (path to the key file) (recommend cosign.key, it is git ignored already)
+
+```console
+cosign generate-key-pair
+```
+
 ## Configure
 
 1. Rename Repository
-2. Generate Cosign Keys
+2. Generate Cosign Keys (optional if you want to run with signing locally, see above)
 3. Update `.goreleaser.yml`, search/replace go-project-template with new project name, adjust GitHub owner
 4. Update `main.go`,
 5. Update `go.mod`, rename go project (using IDE is best so renames happen across all files)
