@@ -8,6 +8,9 @@ on:
       - next
     tags:
       - "*"
+  pull_request:
+    branches:
+      - main
   release:
     types:
       - published
