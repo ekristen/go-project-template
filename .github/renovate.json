@@ -2,6 +2,11 @@
   "extends": [
     "config:recommended"
   ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "automerge": true,
+    "assignees": ["@ekristen"]
+  },
   "packageRules": [
     {
       "matchUpdateTypes": [
