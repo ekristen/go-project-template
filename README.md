@@ -15,6 +15,8 @@ This is an opinionated go project template to use as a starting point for new pr
 - Opinionated Layout
   - Never use `internal/` folder
   - Everything is under `pkg/` folder
+- Commits must meet [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+  - Automated with GitHub Actions ([commit-lint](https://github.com/conventional-changelog/commitlint/#what-is-commitlint))
 - Automatic Dependency Management with [Renovate](https://github.com/renovatebot/renovate)
 - Automatic [Semantic Releases](https://semantic-release.gitbook.io/)
 - Documentation with Material for MkDocs
