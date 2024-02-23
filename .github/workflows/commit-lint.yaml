@@ -1,4 +1,4 @@
-name: semantic-lint
+name: commit-lint
 
 on:
   pull_request_target:
@@ -12,10 +12,9 @@ permissions:
   pull-requests: read
 
 jobs:
-  lint:
-    name: semantic-lint
+  commit-lint:
+    name: commit-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: wagoid/commitlint-github-action@v5
