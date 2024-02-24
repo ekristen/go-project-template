@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.6-labs
-FROM debian:bullseye-slim as base
+FROM cgr.dev/chainguard/wolfi-base:latest as base
 ARG PROJECT_NAME=go-project-template
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN useradd -r -u 999 -d /home/${PROJECT_NAME} ${PROJECT_NAME}
+RUN apk add --no-cache ca-certificates
+RUN addgroup -S ${PROJECT_NAME} && adduser -S ${PROJECT_NAME} -G ${PROJECT_NAME}
 
 FROM ghcr.io/acorn-io/images-mirror/golang:1.21 AS build
 ARG PROJECT_NAME=go-project-template
