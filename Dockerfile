@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.6-labs
+# syntax=docker/dockerfile:1.7-labs
 FROM cgr.dev/chainguard/wolfi-base:latest as base
 ARG PROJECT_NAME=go-project-template
 RUN apk add --no-cache ca-certificates
