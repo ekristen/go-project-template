@@ -14,6 +14,8 @@ builds:
     goarch:
       - amd64
       - arm64
+    flags:
+      - -trimpath
     ldflags:
       - -s
       - -w
@@ -22,6 +24,7 @@ builds:
       - -X '{{ .ModulePath }}/pkg/common.BRANCH={{ .Branch }}'
       - -X '{{ .ModulePath }}/pkg/common.VERSION={{ .Tag }}'
       - -X '{{ .ModulePath }}/pkg/common.COMMIT={{ .Commit }}'
+    mod_timestamp: '{{ .CommitTimestamp }}'
     hooks:
       post:
         - cmd: |
@@ -32,6 +35,8 @@ builds:
             {{- end -}}
           env:
             - QUILL_LOG_FILE=/tmp/quill-{{ .Target }}.log
+sboms:
+  - artifacts: archive
 archives:
   - id: go-project-template
     builds:
