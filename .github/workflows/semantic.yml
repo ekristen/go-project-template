@@ -27,11 +27,6 @@ jobs:
         with:
           node-version: "lts/*"
       - name: release
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_GITHUB_TOKEN }}
-        run: |
-          npx \
-            -p @semantic-release/commit-analyzer \
-            -p @semantic-release/release-notes-generator \
-            -p @semantic-release/github \
-            semantic-release --debug
