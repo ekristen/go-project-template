@@ -26,7 +26,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
+      - name: generate-token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PEM }}
+          revoke: true
       - name: release
         uses: cycjimmy/semantic-release-action@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.SEMANTIC_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
