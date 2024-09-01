@@ -9,3 +9,5 @@ branches:
     prerelease: true
   - name: pre/rc
     prerelease: '${name.replace(/^pre\\//g, "")}'
+releaseNotes:
+  template: "- {{#each commits}}\n  * {{this.header}} ({{this.author.name}})\n{{/each}}"
