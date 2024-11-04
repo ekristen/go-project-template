@@ -1,24 +1,7 @@
 plugins:
-  - "@semantic-release/commit-analyzer"
-  - - "@semantic-release/release-notes-generator"
-    - writerOpts:
-        # Customizing the commit format to include only the author username
-        commitPartial: |
-          - {{header}} ({{hash}}) by [@{{authorUsername}}]({{authorUrl}})
-        # Customize footerPartial to list contributors by username
-        footerPartial: |
-          {{#if commitGroups}}
-            ### Contributors
-            {{#with @root.commitGroups}}
-              {{#each commits}}
-                {{#if authorUsername}}
-                  - [@{{authorUsername}}]({{authorUrl}})
-                {{/if}}
-              {{/each}}
-            {{/with}}
-          {{/if}}
-          {{> footer}}
   - "@semantic-release/github"
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
 branches:
   - name: main
   - name: next
