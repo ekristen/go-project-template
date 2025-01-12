@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func New(title string, swaggerJSONPath string, basePath string) http.Handler {
+func New(title, swaggerJSONPath, basePath string) http.Handler {
 	return &ScalarGUI{
 		Title:       title,
 		SwaggerJSON: swaggerJSONPath,
@@ -21,7 +21,7 @@ type ScalarGUI struct {
 
 func (s *ScalarGUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(fmt.Sprintf(`<!doctype html>
+	_, _ = fmt.Fprintf(w, `<!doctype html>
 <html>
   <head>
     <title>%s</title>
@@ -36,5 +36,5 @@ func (s *ScalarGUI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
       data-url="%s"></script>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
   </body>
-</html>`, s.Title, s.SwaggerJSON)))
+</html>`, s.Title, s.SwaggerJSON)
 }

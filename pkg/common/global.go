@@ -4,9 +4,11 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"golang.org/x/crypto/ssh/terminal"
+
+	"golang.org/x/term"
 )
 
 func Flags() []cli.Flag {
@@ -54,10 +56,8 @@ func Before(c *cli.Context) error {
 	var encoder zapcore.Encoder
 	if c.String("log-format") == "json" {
 		encoder = zapcore.NewJSONEncoder(encoderConfig) // JSON encoder for non-TTY
-	} else {
-		if terminal.IsTerminal(int(os.Stdout.Fd())) {
-			encoder = zapcore.NewConsoleEncoder(encoderConfig) // Console encoder with colors
-		}
+	} else if term.IsTerminal(int(os.Stdout.Fd())) {
+		encoder = zapcore.NewConsoleEncoder(encoderConfig) // Console encoder with colors
 	}
 
 	logLevel := c.String("log-level")

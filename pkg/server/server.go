@@ -32,7 +32,7 @@ type Options struct {
 	Log *zap.Logger
 }
 
-func RunServer(ctx context.Context, opts *Options) error {
+func RunServer(ctx context.Context, opts *Options) error { //nolint:funlen
 	response.DefaultErrorResponseContentType = "application/problem+json"
 	response.DefaultSuccessResponseContentType = "application/json"
 
