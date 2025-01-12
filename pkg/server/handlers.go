@@ -1,10 +1,10 @@
-package apiserver
+package server
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/ekristen/go-project-template/pkg/common"
 )
@@ -14,6 +14,6 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	if _, err := w.Write([]byte(data)); err != nil {
-		logrus.WithError(err).Warn("unable to write to response")
+		zap.L().Warn("unable to write to response", zap.Error(err))
 	}
 }
