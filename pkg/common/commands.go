@@ -1,15 +1,17 @@
 package common
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
+
+	"go.uber.org/zap"
 )
 
+var logger = zap.S()
 var commands = make(map[string][]*cli.Command, 0)
 
 // RegisterSubcommand allows you to register a command under a group
 func RegisterSubcommand(group string, command *cli.Command) {
-	logrus.Debugln("Registering", command.Name, "command...")
+	logger.Debug("Registering", command.Name, "command...")
 	commands[group] = append(commands[group], command)
 }
 
@@ -20,7 +22,7 @@ func GetSubcommands(group string) []*cli.Command {
 
 // RegisterCommand -- allows you to register a command under the main group
 func RegisterCommand(command *cli.Command) {
-	logrus.Debugln("Registering", command.Name, "command...")
+	logger.Debug("Registering", command.Name, "command...")
 	commands["_main_"] = append(commands["_main_"], command)
 }
 
