@@ -1,10 +1,11 @@
+version: 2
 release:
   github:
-    owner: ekristen
+    owner: swade1987
     name: go-project-template
 env:
   - REGISTRY=ghcr.io
-  - IMAGE=ekristen/go-project-template
+  - IMAGE=swade1987/go-project-template
 builds:
   - id: go-project-template
     goos:
@@ -25,16 +26,6 @@ builds:
       - -X '{{ .ModulePath }}/pkg/common.VERSION={{ .Tag }}'
       - -X '{{ .ModulePath }}/pkg/common.COMMIT={{ .Commit }}'
     mod_timestamp: '{{ .CommitTimestamp }}'
-    hooks:
-      post:
-        - cmd: |
-            {{- if eq .Os "darwin" -}} 
-            quill sign-and-notarize "{{ .Path }}" --dry-run={{ .IsSnapshot }} --ad-hoc={{ .IsSnapshot }} -vv
-            {{- else -}}
-            true
-            {{- end -}}
-          env:
-            - QUILL_LOG_FILE=/tmp/quill-{{ .Target }}.log
 sboms:
   - artifacts: archive
 archives:
@@ -114,7 +105,7 @@ docker_signs:
 checksum:
   name_template: "checksums.txt"
 snapshot:
-  name_template: '{{ trimprefix .Summary "v" }}'
+  version_template: '{{ trimprefix .Summary "v" }}'
 # We are skipping changelog because we are using semantic release
 changelog:
-  skip: true
+  disable: true

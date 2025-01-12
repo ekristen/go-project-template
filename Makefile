@@ -1,3 +1,11 @@
+initialise:
+	pre-commit --version || brew install pre-commit
+	pre-commit install
+	pre-commit run -a
+
+build:
+	goreleaser --clean --snapshot --skip sign
+
 docs-build:
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material build
 

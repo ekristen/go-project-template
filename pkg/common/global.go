@@ -2,11 +2,10 @@ package common
 
 import (
 	"fmt"
-	"path"
-	"runtime"
 
-	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func Flags() []cli.Flag {
@@ -18,50 +17,46 @@ func Flags() []cli.Flag {
 			EnvVars: []string{"LOGLEVEL"},
 			Value:   "info",
 		},
-		&cli.BoolFlag{
-			Name:  "log-caller",
-			Usage: "log the caller (aka line number and file)",
-		},
-		&cli.BoolFlag{
-			Name:  "log-disable-color",
-			Usage: "disable log coloring",
-		},
-		&cli.BoolFlag{
-			Name:  "log-full-timestamp",
-			Usage: "force log output to always show full timestamp",
-		},
 	}
 
 	return globalFlags
 }
 
 func Before(c *cli.Context) error {
-	formatter := &logrus.TextFormatter{
-		DisableColors: c.Bool("log-disable-color"),
-		FullTimestamp: c.Bool("log-full-timestamp"),
-	}
-	if c.Bool("log-caller") {
-		logrus.SetReportCaller(true)
+	config := zap.NewProductionConfig()
 
-		formatter.CallerPrettyfier = func(f *runtime.Frame) (string, string) {
-			return "", fmt.Sprintf("%s:%d", path.Base(f.File), f.Line)
-		}
+	// Handle color settings
+	if c.Bool("log-disable-color") {
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	} else {
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	}
 
-	logrus.SetFormatter(formatter)
+	// Handle timestamp settings
+	if c.Bool("log-full-timestamp") {
+		config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	}
 
+	// Handle caller settings
+	config.DisableCaller = !c.Bool("log-caller")
+
+	// Set log level
 	switch c.String("log-level") {
-	case "trace":
-		logrus.SetLevel(logrus.TraceLevel)
-	case "debug":
-		logrus.SetLevel(logrus.DebugLevel)
+	case "trace", "debug":
+		config.Level = zap.NewAtomicLevelAt(zapcore.DebugLevel)
 	case "info":
-		logrus.SetLevel(logrus.InfoLevel)
+		config.Level = zap.NewAtomicLevelAt(zapcore.InfoLevel)
 	case "warn":
-		logrus.SetLevel(logrus.WarnLevel)
+		config.Level = zap.NewAtomicLevelAt(zapcore.WarnLevel)
 	case "error":
-		logrus.SetLevel(logrus.ErrorLevel)
+		config.Level = zap.NewAtomicLevelAt(zapcore.ErrorLevel)
 	}
 
+	logger, err := config.Build()
+	if err != nil {
+		return fmt.Errorf("failed to initialize logger: %w", err)
+	}
+
+	zap.ReplaceGlobals(logger)
 	return nil
 }

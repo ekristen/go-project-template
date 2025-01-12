@@ -1,13 +1,15 @@
 package example
 
 import (
-	"github.com/ekristen/go-project-template/pkg/common"
-	"github.com/sirupsen/logrus"
+	"github.com/swade1987/go-project-template/pkg/common"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 )
 
+var logger = zap.L()
+
 func Execute(c *cli.Context) error {
-	logrus.Info("example called")
+	logger.Info("example called")
 	return nil
 }
 

@@ -33,7 +33,7 @@ This is an opinionated go project template to use as a starting point for new pr
 ### Multi-Platform Builds
 
 This project is designed to build for multiple platforms, including macOS, Linux, and Windows. It also supports
-multiple architectures including amd64 and arm64. 
+multiple architectures including amd64 and arm64.
 
 The goreleaser configuration is set up to build for all platforms and architectures by default. It even supports pushing
 multi-architecture docker manifests by default. Some knowledge about GoReleaser's configuration is required should you
@@ -55,7 +55,7 @@ If configured properly, the binaries located within the archives produced by GoR
 by the Apple Notary Service and will automatically run on any macOS system without having to approve it under System
 Preferences.
 
-If you do not wish to use 1Password simply export the same environment variables using secrets to populate them. The 
+If you do not wish to use 1Password simply export the same environment variables using secrets to populate them. The
 `QUILL_SIGN_P12` and `QUILL_NOTARY_KEY` need to be base64 encoded or paths to the actual files.
 
 ## Building
@@ -72,7 +72,7 @@ You can opt to generate a cosign keypair locally and set the following environme
 `goreleaser --clean --snapshot` without the `--skip sign` flag to get signed artifacts.
 
 Environment Variables:
-- 
+-
 - COSIGN_PASSWORD
 - COSIGN_KEY (path to the key file) (recommend cosign.key, it is git ignored already)
 
@@ -91,7 +91,7 @@ cosign generate-key-pair
 ### Docker
 
 The Dockerfile is set up to build the project and then copy the artifacts from the build into the final image. It is
-also configured to allow you to just run `docker build` directly if you do not want to use GoReleaser. 
+also configured to allow you to just run `docker build` directly if you do not want to use GoReleaser.
 
 To make things easier and faster, the Dockerfile has a default build argument set to `go-project-template`. GoReleaser
 will pass the new project name down (if you update the `.goreleaser.yml` file) and the Dockerfile will use that instead.

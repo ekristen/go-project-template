@@ -42,7 +42,7 @@ You can opt to generate a cosign keypair locally and set the following environme
 `goreleaser --clean --snapshot` without the `--skip sign` flag to get signed artifacts.
 
 Environment Variables:
-- 
+-
 - COSIGN_PASSWORD
 - COSIGN_KEY (path to the key file) (recommend cosign.key, it is git ignored already)
 

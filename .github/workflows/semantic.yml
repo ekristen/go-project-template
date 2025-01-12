@@ -37,4 +37,3 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-

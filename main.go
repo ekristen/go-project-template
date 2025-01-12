@@ -5,22 +5,38 @@ import (
 	"path"
 
 	"github.com/rancher/wrangler/pkg/signals"
-	"github.com/sirupsen/logrus"
+	"github.com/swade1987/go-project-template/pkg/common"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 
-	"github.com/ekristen/go-project-template/pkg/common"
+	_ "github.com/swade1987/go-project-template/pkg/commands/example"
 )
+
+func initializeLogger() *zap.Logger {
+	// Create a default production logger until the Before function configures it
+	logger, _ := zap.NewProduction()
+	return logger
+}
+
+// syncLogger flushes the logger buffer
+func syncLogger(logger *zap.Logger) {
+	_ = logger.Sync() // ignore sync errors
+}
 
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
-			// log panics forces exit
-			if _, ok := r.(*logrus.Entry); ok {
+			// For zap, we'll check if it's a logger error
+			if _, ok := r.(error); ok {
 				os.Exit(1)
 			}
 			panic(r)
 		}
 	}()
+
+	// Initialize default logger
+	logger := initializeLogger()
+	defer syncLogger(logger)
 
 	app := cli.NewApp()
 	app.Name = path.Base(os.Args[0])
@@ -28,8 +44,8 @@ func main() {
 	app.Version = common.AppVersion.Summary
 	app.Authors = []*cli.Author{
 		{
-			Name:  "Erik Kristensen",
-			Email: "erik@erikkristensen",
+			Name:  "Steve Wade",
+			Email: "steven@stevenwade.co.uk",
 		},
 	}
 
@@ -38,11 +54,15 @@ func main() {
 
 	app.Commands = common.GetCommands()
 	app.CommandNotFound = func(context *cli.Context, command string) {
-		logrus.Fatalf("Command %s not found.", command)
+		logger.Fatal("command not found",
+			zap.String("command", command),
+		)
 	}
 
 	ctx := signals.SetupSignalContext()
 	if err := app.RunContext(ctx, os.Args); err != nil {
-		logrus.Fatal(err)
+		logger.Fatal("application error",
+			zap.Error(err),
+		)
 	}
 }

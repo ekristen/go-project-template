@@ -37,10 +37,10 @@ linters:
   enable:
     - bodyclose
     #- depguard
+    - copyloopvar
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - funlen
     - goconst
     - gocritic
