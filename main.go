@@ -5,20 +5,21 @@ import (
 	"path"
 
 	"github.com/rancher/wrangler/pkg/signals"
-	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 
 	"github.com/ekristen/go-project-template/pkg/common"
+
+	_ "github.com/ekristen/go-project-template/pkg/commands/example"
+	_ "github.com/ekristen/go-project-template/pkg/commands/server"
 )
 
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
-			// log panics forces exit
-			if _, ok := r.(*logrus.Entry); ok {
-				os.Exit(1)
-			}
-			panic(r)
+			// log panics using zap and force exit
+			zap.L().Error("panic recovered", zap.Any("panic", r))
+			os.Exit(1)
 		}
 	}()
 
@@ -29,7 +30,7 @@ func main() {
 	app.Authors = []*cli.Author{
 		{
 			Name:  "Erik Kristensen",
-			Email: "erik@erikkristensen",
+			Email: "erik@erikkristensen.com",
 		},
 	}
 
@@ -38,11 +39,11 @@ func main() {
 
 	app.Commands = common.GetCommands()
 	app.CommandNotFound = func(context *cli.Context, command string) {
-		logrus.Fatalf("Command %s not found.", command)
+		zap.L().Fatal("command not found.", zap.String("command", command))
 	}
 
 	ctx := signals.SetupSignalContext()
 	if err := app.RunContext(ctx, os.Args); err != nil {
-		logrus.Fatal(err)
+		zap.L().Fatal("fatal error", zap.Error(err))
 	}
 }
