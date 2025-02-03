@@ -9,9 +9,9 @@ require (
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/rancher/wrangler v1.1.2
 	github.com/stretchr/testify v1.10.0
-	github.com/swaggest/jsonschema-go v0.3.72
+	github.com/swaggest/jsonschema-go v0.3.73
 	github.com/swaggest/openapi-go v0.2.54
-	github.com/swaggest/rest v0.2.70
+	github.com/swaggest/rest v0.2.71
 	github.com/swaggest/swgui v1.8.2
 	github.com/swaggest/usecase v1.3.1
 	github.com/urfave/cli/v2 v2.27.5
