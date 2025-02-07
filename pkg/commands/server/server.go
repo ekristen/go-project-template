@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/urfave/cli/v2"
+
 	"go.uber.org/zap"
 
 	"github.com/ekristen/go-project-template/pkg/common"
@@ -9,7 +10,7 @@ import (
 )
 
 func Execute(c *cli.Context) error {
-	return server.RunServer(c.Context, &server.Options{
+	return server.Run(c.Context, &server.Options{
 		Port: c.Int("port"),
 		Log:  zap.L().With(zap.String("component", "server")),
 	})
