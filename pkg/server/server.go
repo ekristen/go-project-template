@@ -10,20 +10,14 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/swaggest/jsonschema-go"
-	oapi "github.com/swaggest/openapi-go"
-	"github.com/swaggest/openapi-go/openapi31"
-	"github.com/swaggest/rest"
-	"github.com/swaggest/rest/nethttp"
-	"github.com/swaggest/rest/response"
-	"github.com/swaggest/rest/response/gzip"
-	"github.com/swaggest/rest/web"
-	swgui "github.com/swaggest/swgui/v5emb"
-
-	"github.com/ekristen/go-project-template/pkg/common"
 	"github.com/ekristen/go-project-template/pkg/docs"
-	"github.com/ekristen/go-project-template/pkg/hashes"
+	"github.com/ekristen/go-project-template/pkg/registry"
+	"github.com/ekristen/go-project-template/pkg/router"
+
+	_ "github.com/ekristen/go-project-template/pkg/cookies"
+	_ "github.com/ekristen/go-project-template/pkg/hashes"
 )
 
 type Options struct {
@@ -36,85 +30,30 @@ func RunServer(ctx context.Context, opts *Options) error {
 	response.DefaultErrorResponseContentType = "application/problem+json"
 	response.DefaultSuccessResponseContentType = "application/json"
 
-	r := openapi31.NewReflector()
-	s := web.NewService(r)
-
-	s.OpenAPISchema().SetTitle(common.NAME)
-	s.OpenAPISchema().SetDescription(common.NAME)
-	s.OpenAPISchema().SetVersion(common.VERSION)
-
-	// An example of global schema override to disable additionalProperties for all object schemas.
-	jsr := s.OpenAPIReflector().JSONSchemaReflector()
-	jsr.DefaultOptions = append(jsr.DefaultOptions,
-		jsonschema.InterceptSchema(func(params jsonschema.InterceptSchemaParams) (stop bool, err error) {
-			// Allow unknown request headers and skip response.
-			if oc, ok := oapi.OperationCtx(params.Context); !params.Processed || !ok ||
-				oc.IsProcessingResponse() || oc.ProcessingIn() == oapi.InHeader {
-				return false, nil
-			}
-
-			schema := params.Schema
-
-			if schema.HasType(jsonschema.Object) && len(schema.Properties) > 0 && schema.AdditionalProperties == nil {
-				schema.AdditionalProperties = (&jsonschema.SchemaOrBool{}).WithTypeBoolean(false)
-			}
-
-			return false, nil
-		}),
-	)
-	s.OpenAPICollector.CombineErrors = "anyOf"
-	s.AddHeadToGet = true
-
-	s.Wrap(
-		// Response validator setup.
-		//
-		// It might be a good idea to disable this middleware in production to save performance,
-		// but keep it enabled in dev/test/staging environments to catch logical issues.
-		response.ValidatorMiddleware(s.ResponseValidatorFactory),
-		gzip.Middleware, // Response compression with support for direct gzip pass through.
-
-		// Example middleware to setup custom error responses.
-		func(handler http.Handler) http.Handler {
-			var h *nethttp.Handler
-			if nethttp.HandlerAs(handler, &h) {
-				h.MakeErrResp = func(ctx context.Context, err error) (int, interface{}) {
-					code, er := rest.Err(err)
-
-					var ae anotherErr
-
-					if errors.As(err, &ae) {
-						return http.StatusBadRequest, ae
-					}
-
-					return code, customErr{
-						Message: er.ErrorText,
-						Details: er.Context,
-					}
-				}
-			}
-
-			return handler
-		},
+	r.Wrap(
+		chimiddleware.Recoverer,
+		chimiddleware.StripSlashes,
 	)
 
-	// Root Handler NOT included in OpenAPI Spec
-	// Example of a RAW HTTP Handler
-	s.Router.Get("/", RootHandler)
+	routeOpts := &registry.RouteOptions{}
 
-	s.Route("/api/v1", func(r chi.Router) {
-		hashes.Register(r)
+	// Register all the routes, this is a nice little trick to get a chi.Router on the web.Service
+	// but still allow all the fancy magic of rest service to take place.
+	r.Group(func(r chi.Router) {
+		for id, h := range registry.GetRegistry() {
+			opts.Log.Debug("registering route", zap.String("id", id))
+			router.Register(r, h, routeOpts)
+		}
 	})
 
 	// Setup Scalable Web UI (nicer UI)
-	s.Docs("/api/v1/docs", docs.New)
-	// Setup Swagger UI.
-	s.Docs("/api/v1/docs/swagger", swgui.New)
+	r.Docs("/api/v1/docs", docs.New)
 
 	// Below this point is where the server is started and graceful shutdown occurs.
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", opts.Port),
-		Handler:           s.Router,
+		Handler:           r.Router,
 		ReadTimeout:       1 * time.Second,
 		WriteTimeout:      1 * time.Second,
 		IdleTimeout:       30 * time.Second,
