@@ -14,7 +14,7 @@ require (
 	github.com/swaggest/rest v0.2.73
 	github.com/swaggest/swgui v1.8.2
 	github.com/swaggest/usecase v1.3.1
-	github.com/urfave/cli/v2 v2.27.5
+	github.com/urfave/cli/v2 v2.27.6
 	go.uber.org/zap v1.27.0
 	golang.org/x/term v0.29.0
 )
