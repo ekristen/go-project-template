@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.14-labs@sha256:16aafd1d331afa5f314579cc4faf5ceb0e3ae15812d2a9da926c14175da73dc7
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:57921b0cac85ef46aab8cfbe223e9376254d4f9456e07a5c6607891897ddad8b as base
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:bf4c68b61aebaa71a81d51456fcfa4dff1992be7ca0feb94ca4a6433cfbcad39 as base
 ARG PROJECT_NAME=go-project-template
 RUN apk add --no-cache ca-certificates
 RUN addgroup -S ${PROJECT_NAME} && adduser -S ${PROJECT_NAME} -G ${PROJECT_NAME}
