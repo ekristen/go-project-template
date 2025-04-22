@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggest/jsonschema-go v0.3.73
 	github.com/swaggest/openapi-go v0.2.57
-	github.com/swaggest/rest v0.2.73
+	github.com/swaggest/rest v0.2.74
 	github.com/swaggest/swgui v1.8.3
 	github.com/swaggest/usecase v1.3.1
 	github.com/urfave/cli/v2 v2.27.6
