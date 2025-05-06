@@ -2,7 +2,7 @@ module github.com/ekristen/go-project-template
 
 go 1.23
 
-toolchain go1.24.2
+toolchain go1.24.3
 
 require (
 	github.com/bool64/ctxd v1.2.1
