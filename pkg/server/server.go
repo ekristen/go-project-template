@@ -26,9 +26,8 @@ type Options struct {
 	Log *zap.Logger
 }
 
-func RunServer(ctx context.Context, opts *Options) error {
-	response.DefaultErrorResponseContentType = "application/problem+json"
-	response.DefaultSuccessResponseContentType = "application/json"
+func Run(ctx context.Context, opts *Options) error {
+	r := router.Configure()
 
 	r.Wrap(
 		chimiddleware.Recoverer,
