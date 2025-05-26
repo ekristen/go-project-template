@@ -8,7 +8,6 @@ require (
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/rancher/wrangler v1.1.2
-	github.com/rancher/wrangler/v3 v3.2.1
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggest/openapi-go v0.2.58
 	github.com/swaggest/rest v0.2.74
@@ -25,7 +24,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 // indirect
-	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
 	github.com/swaggest/form/v5 v5.1.1 // indirect
 	github.com/swaggest/jsonschema-go v0.3.78 // indirect
 	github.com/swaggest/refl v1.4.0 // indirect
