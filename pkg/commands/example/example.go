@@ -1,14 +1,16 @@
 package example
 
 import (
-	"github.com/urfave/cli/v2"
+	"context"
+
+	"github.com/urfave/cli/v3"
 
 	"go.uber.org/zap"
 
 	"github.com/ekristen/go-project-template/pkg/common"
 )
 
-func Execute(c *cli.Context) error {
+func Execute(_ context.Context, _ *cli.Command) error {
 	zap.L().Info("example called")
 	return nil
 }

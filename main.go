@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"os"
-	"path"
 
 	"github.com/rancher/wrangler/pkg/signals"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"go.uber.org/zap"
 
 	"github.com/ekristen/go-project-template/pkg/common"
@@ -23,27 +23,24 @@ func main() {
 		}
 	}()
 
-	app := cli.NewApp()
-	app.Name = path.Base(os.Args[0])
-	app.Usage = common.AppVersion.Name
-	app.Version = common.AppVersion.Summary
-	app.Authors = []*cli.Author{
-		{
-			Name:  "Erik Kristensen",
-			Email: "erik@erikkristensen.com",
+	app := &cli.Command{
+		Name:    common.AppVersion.Name,
+		Usage:   common.AppVersion.Name,
+		Version: common.AppVersion.Summary,
+		Authors: []any{
+			"Erik Kristensen <erik@erikkristensen.com>",
 		},
-	}
-
-	app.Before = common.Before
-	app.Flags = common.Flags()
-
-	app.Commands = common.GetCommands()
-	app.CommandNotFound = func(context *cli.Context, command string) {
-		zap.L().Fatal("command not found.", zap.String("command", command))
+		Commands: common.GetCommands(),
+		CommandNotFound: func(ctx context.Context, command *cli.Command, s string) {
+			zap.L().Error("command not found", zap.String("command", s))
+		},
+		EnableShellCompletion: true,
+		Before:                common.Before,
+		Flags:                 common.Flags(),
 	}
 
 	ctx := signals.SetupSignalContext()
-	if err := app.RunContext(ctx, os.Args); err != nil {
+	if err := app.Run(ctx, os.Args); err != nil {
 		zap.L().Fatal("fatal error", zap.Error(err))
 	}
 }

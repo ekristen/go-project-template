@@ -1,7 +1,9 @@
 package server
 
 import (
-	"github.com/urfave/cli/v2"
+	"context"
+
+	"github.com/urfave/cli/v3"
 
 	"go.uber.org/zap"
 
@@ -9,8 +11,8 @@ import (
 	"github.com/ekristen/go-project-template/pkg/server"
 )
 
-func Execute(c *cli.Context) error {
-	return server.Run(c.Context, &server.Options{
+func Execute(ctx context.Context, c *cli.Command) error {
+	return server.Run(ctx, &server.Options{
 		Port: c.Int("port"),
 		Log:  zap.L().With(zap.String("component", "server")),
 	})
