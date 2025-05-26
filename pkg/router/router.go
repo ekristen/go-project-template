@@ -34,30 +34,6 @@ func Configure() *web.Service {
 	s.OpenAPISchema().
 		SetAPIKeySecurity("cookie", common.NAME, oapi.InCookie, "session cookie")
 
-	// An example of global schema override to disable additionalProperties for all object schemas.
-	// TODO: this causes a bug with requests if additional cookies are sent potentially, might want to disable entirely?
-	// that is why it is currently disabled.
-	/*
-		jsr := s.OpenAPIReflector().JSONSchemaReflector()
-		jsr.DefaultOptions = append(jsr.DefaultOptions,
-			jsonschema.InterceptSchema(func(params jsonschema.InterceptSchemaParams) (stop bool, err error) {
-				// Allow unknown request headers and skip response.
-				if oc, ok := oapi.OperationCtx(params.Context); !params.Processed || !ok ||
-					oc.IsProcessingResponse() || oc.ProcessingIn() == oapi.InHeader {
-					return false, nil
-				}
-
-				schema := params.Schema
-
-				if schema.HasType(jsonschema.Object) && len(schema.Properties) > 0 && schema.AdditionalProperties == nil {
-					schema.AdditionalProperties = (&jsonschema.SchemaOrBool{}).WithTypeBoolean(false)
-				}
-
-				return false, nil
-			}),
-		)
-	*/
-
 	s.OpenAPICollector.CombineErrors = "anyOf"
 	s.AddHeadToGet = true
 
@@ -66,8 +42,7 @@ func Configure() *web.Service {
 		//
 		// It might be a good idea to disable this middleware in production to save performance,
 		// but keep it enabled in dev/test/staging environments to catch logical issues.
-		// TODO: re-enable after bug with schema gen is fixed ...
-		//response.ValidatorMiddleware(s.ResponseValidatorFactory),
+		response.ValidatorMiddleware(s.ResponseValidatorFactory),
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
 
@@ -93,17 +68,18 @@ func Register(r chi.Router, h registry.WithID, opts *registry.RouteOptions) {
 		ucOptions = w.UseCaseOptions()
 	}
 
-	if uc, ok := h.(registry.WithUseCase); ok {
-		r.With(with...).Method(h.Method(), h.Path(), nethttp.NewHandler(uc.UseCase(), ucOptions...))
-	} else if handler, ok := h.(registry.WithServeHTTP); ok {
+	switch v := h.(type) {
+	case registry.WithUseCase:
+		r.With(with...).Method(h.Method(), h.Path(), nethttp.NewHandler(v.UseCase(), ucOptions...))
+	case registry.WithServeHTTP:
 		if h.Method() == "ALL" {
-			r.With(with...).Handle(h.Path(), http.HandlerFunc(handler.ServeHTTP))
+			r.With(with...).Handle(h.Path(), http.HandlerFunc(v.ServeHTTP))
 			return
 		}
 
-		r.With(with...).Method(h.Method(), h.Path(), http.HandlerFunc(handler.ServeHTTP))
-	} else {
-		panic("unknown handler type")
+		r.With(with...).Method(h.Method(), h.Path(), http.HandlerFunc(v.ServeHTTP))
+	default:
+		panic(fmt.Sprintf("unknown handler type %T", v))
 	}
 }
 
@@ -112,8 +88,7 @@ func Register(r chi.Router, h registry.WithID, opts *registry.RouteOptions) {
 func attachPermissions(permissions []string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fmt.Println("called here")
-			ctx := context.WithValue(r.Context(), "requiredPermissions", permissions)
+			ctx := context.WithValue(r.Context(), "requiredPermissions", permissions) //nolint:staticcheck
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
