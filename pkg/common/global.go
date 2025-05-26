@@ -1,9 +1,10 @@
 package common
 
 import (
+	"context"
 	"os"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -17,19 +18,19 @@ func Flags() []cli.Flag {
 			Name:    "log-level",
 			Usage:   "Log Level",
 			Aliases: []string{"l"},
-			EnvVars: []string{"LOG_LEVEL"},
+			Sources: cli.EnvVars("LOG_LEVEL"),
 			Value:   "info",
 		},
 		&cli.BoolFlag{
 			Name:    "log-caller",
 			Usage:   "log the caller (aka line number and file)",
-			EnvVars: []string{"LOG_CALLER"},
+			Sources: cli.EnvVars("LOG_CALLER"),
 			Value:   true,
 		},
 		&cli.StringFlag{
 			Name:    "log-format",
 			Usage:   "the log format to use, defaults to auto, options are auto, json, console",
-			EnvVars: []string{"LOG_FORMAT"},
+			Sources: cli.EnvVars("LOG_FORMAT"),
 			Value:   "auto",
 		},
 	}
@@ -37,7 +38,7 @@ func Flags() []cli.Flag {
 	return globalFlags
 }
 
-func Before(c *cli.Context) error {
+func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",
 		LevelKey:       "level",
@@ -63,7 +64,7 @@ func Before(c *cli.Context) error {
 	logLevel := c.String("log-level")
 	var level zapcore.Level
 	if err := level.UnmarshalText([]byte(logLevel)); err != nil {
-		return err
+		return ctx, err
 	}
 
 	core := zapcore.NewCore(
@@ -84,5 +85,5 @@ func Before(c *cli.Context) error {
 
 	zap.ReplaceGlobals(logger)
 
-	return nil
+	return ctx, nil
 }

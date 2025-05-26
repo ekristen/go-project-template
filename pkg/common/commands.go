@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"go.uber.org/zap"
 )
