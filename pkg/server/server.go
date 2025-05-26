@@ -26,7 +26,7 @@ type Options struct {
 	Log *zap.Logger
 }
 
-func Run(ctx context.Context, opts *Options) error { //nolint:funlen
+func Run(ctx context.Context, opts *Options) error {
 	r := router.Configure()
 
 	r.Wrap(
