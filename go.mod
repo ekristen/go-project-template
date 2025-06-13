@@ -12,7 +12,7 @@ require (
 	github.com/swaggest/openapi-go v0.2.58
 	github.com/swaggest/rest v0.2.74
 	github.com/swaggest/usecase v1.3.1
-	github.com/urfave/cli/v3 v3.3.3
+	github.com/urfave/cli/v3 v3.3.8
 	go.uber.org/zap v1.27.0
 	golang.org/x/term v0.29.0
 )
