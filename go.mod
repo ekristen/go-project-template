@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.4
 
 require (
-	github.com/go-chi/chi/v5 v5.2.1
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/rancher/wrangler v1.1.2
 	github.com/stretchr/testify v1.10.0
