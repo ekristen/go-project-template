@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/rancher/wrangler/pkg/signals"
+	"github.com/rancher/wrangler/v3/pkg/signals"
 	"github.com/urfave/cli/v3"
 	"go.uber.org/zap"
 
