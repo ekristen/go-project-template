@@ -10,7 +10,7 @@ require (
 	github.com/rancher/wrangler v1.1.2
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggest/openapi-go v0.2.59
-	github.com/swaggest/rest v0.2.74
+	github.com/swaggest/rest v0.2.75
 	github.com/swaggest/usecase v1.3.1
 	github.com/urfave/cli/v3 v3.3.8
 	go.uber.org/zap v1.27.0
