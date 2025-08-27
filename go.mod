@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/rancher/wrangler v1.1.2
-	github.com/stretchr/testify v1.11.0
+	github.com/stretchr/testify v1.11.1
 	github.com/swaggest/openapi-go v0.2.59
 	github.com/swaggest/rest v0.2.75
 	github.com/swaggest/usecase v1.3.1
