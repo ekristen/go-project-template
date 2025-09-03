@@ -2,7 +2,7 @@ module github.com/ekristen/go-project-template
 
 go 1.23.0
 
-toolchain go1.25.0
+toolchain go1.25.1
 
 require (
 	github.com/go-chi/chi/v5 v5.2.3
