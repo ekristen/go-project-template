@@ -7,7 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"go.uber.org/zap"
+	"github.com/ekristen/go-telemetry"
+	"github.com/rs/zerolog/log"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -23,10 +24,12 @@ import (
 type Options struct {
 	Port int
 
-	Log *zap.Logger
+	Telemetry *telemetry.Telemetry
 }
 
 func Run(ctx context.Context, opts *Options) error {
+	logger := log.With().Str("component", "server").Logger()
+
 	r := router.Configure()
 
 	r.Wrap(
@@ -40,7 +43,7 @@ func Run(ctx context.Context, opts *Options) error {
 	// but still allow all the fancy magic of rest service to take place.
 	r.Group(func(r chi.Router) {
 		for id, h := range registry.GetRegistry() {
-			opts.Log.Debug("registering route", zap.String("id", id))
+			logger.Debug().Str("id", id).Msg("registering route")
 			router.Register(r, h, routeOpts)
 		}
 	})
@@ -61,22 +64,22 @@ func Run(ctx context.Context, opts *Options) error {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			opts.Log.Fatal("listen: %s\n", zap.Error(err))
+			logger.Fatal().Err(err).Msg("listen error")
 		}
 	}()
-	opts.Log.With(zap.Int("port", opts.Port)).Info("starting api server")
+	logger.Info().Int("port", opts.Port).Msg("starting api server")
 
-	opts.Log.Debug("waiting for context to be done")
+	logger.Debug().Msg("waiting for context to be done")
 
 	<-ctx.Done()
 
-	opts.Log.Info("shutting down api server")
+	logger.Info().Msg("shutting down api server")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
-		opts.Log.Error("unable to shutdown the api server gracefully", zap.Error(err))
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		logger.Error().Err(err).Msg("unable to shutdown the api server gracefully")
 		return err
 	}
 

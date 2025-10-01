@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.uber.org/zap"
+	"github.com/rs/zerolog/log"
 
 	"github.com/ekristen/go-project-template/pkg/common"
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -36,6 +36,6 @@ func (h *RootHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(200)
 	w.Header().Set("Content-Type", "application/json")
 	if _, err := w.Write([]byte(data)); err != nil {
-		zap.L().Warn("unable to write to response", zap.Error(err))
+		log.Warn().Err(err).Msg("unable to write to response")
 	}
 }

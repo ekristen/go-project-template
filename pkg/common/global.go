@@ -4,13 +4,15 @@ import (
 	"context"
 	"os"
 
+	"github.com/ekristen/go-telemetry"
+	tzerolog "github.com/ekristen/go-telemetry/logger/zerolog"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v3"
-
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-
 	"golang.org/x/term"
 )
+
+var telemetryInstance *telemetry.Telemetry
 
 func Flags() []cli.Flag {
 	globalFlags := []cli.Flag{
@@ -39,51 +41,62 @@ func Flags() []cli.Flag {
 }
 
 func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
-	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "time",
-		LevelKey:       "level",
-		NameKey:        "logger",
-		CallerKey:      "caller",
-		MessageKey:     "msg",
-		StacktraceKey:  "stacktrace",
-		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.CapitalColorLevelEncoder, // Adds color
-		EncodeTime:     zapcore.ISO8601TimeEncoder,       // Readable time format
-		EncodeDuration: zapcore.StringDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-		EncodeName:     zapcore.FullNameEncoder,
-	}
-
-	var encoder zapcore.Encoder
-	if c.String("log-format") == "json" {
-		encoder = zapcore.NewJSONEncoder(encoderConfig) // JSON encoder for non-TTY
-	} else if term.IsTerminal(int(os.Stdout.Fd())) {
-		encoder = zapcore.NewConsoleEncoder(encoderConfig) // Console encoder with colors
-	}
-
+	// Parse log level
 	logLevel := c.String("log-level")
-	var level zapcore.Level
-	if err := level.UnmarshalText([]byte(logLevel)); err != nil {
+	level, err := zerolog.ParseLevel(logLevel)
+	if err != nil {
 		return ctx, err
 	}
 
-	core := zapcore.NewCore(
-		encoder,
-		zapcore.AddSync(zapcore.Lock(os.Stdout)), // Output to stdout
-		level,                                    // Log level
-	)
+	// Configure global zerolog level
+	zerolog.SetGlobalLevel(level)
 
-	options := []zap.Option{zap.AddStacktrace(zapcore.ErrorLevel)}
-	if c.Bool("log-caller") {
-		options = append(options, zap.AddCaller())
+	// Set up console writer based on format preference and terminal detection
+	if c.String("log-format") == "json" || (!term.IsTerminal(int(os.Stdout.Fd())) && c.String("log-format") == "auto") {
+		// Use JSON format for non-TTY or when explicitly requested
+		log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+	} else {
+		// Use console format with colors for TTY
+		consoleWriter := zerolog.ConsoleWriter{
+			Out:        os.Stdout,
+			TimeFormat: "2006-01-02T15:04:05Z07:00",
+		}
+		log.Logger = zerolog.New(consoleWriter).With().Timestamp().Logger()
 	}
 
-	logger := zap.New(core, options...)
-	defer func(logger *zap.Logger) {
-		_ = logger.Sync()
-	}(logger)
+	// Configure caller information
+	if c.Bool("log-caller") {
+		log.Logger = log.Logger.With().Caller().Logger()
+	}
 
-	zap.ReplaceGlobals(logger)
+	// Initialize telemetry with zerolog wrapper using the configured global logger
+	opts := &telemetry.Options{
+		ServiceName:    AppVersion.Name,
+		ServiceVersion: AppVersion.Summary,
+		Logger: tzerolog.Wrap(log.Logger, tzerolog.WrapOptions{
+			ServiceName:    AppVersion.Name,
+			ServiceVersion: AppVersion.Summary,
+		}),
+	}
+
+	// Initialize telemetry (this will set up OTEL providers)
+	telemetryInstance, err = telemetry.New(ctx, opts)
+	if err != nil {
+		log.Warn().Err(err).Msg("failed to initialize telemetry")
+	}
 
 	return ctx, nil
+}
+
+// GetTelemetry returns the global telemetry instance
+func GetTelemetry() *telemetry.Telemetry {
+	return telemetryInstance
+}
+
+// Shutdown gracefully shuts down the telemetry instance
+func Shutdown(ctx context.Context) error {
+	if telemetryInstance != nil {
+		return telemetryInstance.Shutdown(ctx)
+	}
+	return nil
 }
