@@ -77,6 +77,7 @@ func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
 			ServiceName:    AppVersion.Name,
 			ServiceVersion: AppVersion.Summary,
 		}),
+		BatchExport: true, // False by default, true batches for production
 	}
 
 	// Initialize telemetry (this will set up OTEL providers)

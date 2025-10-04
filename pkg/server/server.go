@@ -37,7 +37,9 @@ func Run(ctx context.Context, opts *Options) error {
 		chimiddleware.StripSlashes,
 	)
 
-	routeOpts := &registry.RouteOptions{}
+	routeOpts := &registry.RouteOptions{
+		Telemetry: opts.Telemetry,
+	}
 
 	// Register all the routes, this is a nice little trick to get a chi.Router on the web.Service
 	// but still allow all the fancy magic of rest service to take place.

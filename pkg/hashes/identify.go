@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/ekristen/go-telemetry"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/api"
@@ -25,6 +26,7 @@ type IdentifyResponse struct {
 }
 
 type IdentifyHandler struct {
+	telemetry *telemetry.Telemetry
 }
 
 func (h *IdentifyHandler) ID() string {
@@ -39,6 +41,10 @@ func (h *IdentifyHandler) Path() string {
 	return "/api/v1/hash/{hash}"
 }
 
+func (h *IdentifyHandler) SetOpts(opts *registry.RouteOptions) {
+	h.telemetry = opts.Telemetry
+}
+
 func (h *IdentifyHandler) UseCase() usecase.Interactor {
 	u := usecase.NewInteractor(h.interact)
 
@@ -51,7 +57,16 @@ func (h *IdentifyHandler) UseCase() usecase.Interactor {
 	return u
 }
 
-func (h *IdentifyHandler) interact(_ context.Context, input IdentifyRequest, output *IdentifyResponse) error {
+func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, output *IdentifyResponse) error {
+	spanCtx, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.identify")
+	defer span.End()
+	ctx = spanCtx
+
+	logger.Info().
+		Str("hash", input.Hash).
+		Int("hash_length", len(input.Hash)).
+		Msg("identifying hash type")
+
 	output.Hash = input.Hash
 	switch len(input.Hash) {
 	case 32:
@@ -63,6 +78,11 @@ func (h *IdentifyHandler) interact(_ context.Context, input IdentifyRequest, out
 	default:
 		output.Type = "unknown"
 	}
+
+	logger.Info().
+		Str("hash", input.Hash).
+		Str("identified_type", output.Type).
+		Msg("hash type identified successfully")
 
 	return nil
 }
