@@ -15,6 +15,8 @@ builds:
     goarch:
       - amd64
       - arm64
+    env:
+      - CGO_ENABLED=0
     flags:
       - -trimpath
     ldflags:
@@ -25,11 +27,11 @@ builds:
       - -X '{{ .ModulePath }}/pkg/common.BRANCH={{ .Branch }}'
       - -X '{{ .ModulePath }}/pkg/common.VERSION={{ .Tag }}'
       - -X '{{ .ModulePath }}/pkg/common.COMMIT={{ .Commit }}'
-    mod_timestamp: '{{ .CommitTimestamp }}'
+    mod_timestamp: "{{ .CommitTimestamp }}"
     hooks:
       post:
         - cmd: |
-            {{- if eq .Os "darwin" -}} 
+            {{- if eq .Os "darwin" -}}
             quill sign-and-notarize "{{ .Path }}" --dry-run={{ .IsSnapshot }} --ad-hoc={{ .IsSnapshot }} -vv
             {{- else -}}
             true
@@ -55,7 +57,7 @@ dockers:
     goarch: amd64
     dockerfile: Dockerfile
     image_templates:
-      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-amd64'
+      - "{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-amd64"
       - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-amd64-{{ .Timestamp }}'
     build_flag_templates:
       - "--platform=linux/amd64"
@@ -76,7 +78,7 @@ dockers:
     goarch: arm64
     dockerfile: Dockerfile
     image_templates:
-      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-arm64'
+      - "{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-arm64"
       - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-arm64-{{ .Timestamp }}'
     build_flag_templates:
       - "--platform=linux/arm64"
@@ -89,10 +91,10 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - '--label=org.opencontainers.image.source={{replace (replace (replace .GitURL "git@" "https://") ".git" "") "github.com:" "github.com/"}}'
 docker_manifests:
-  - name_template: '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}'
+  - name_template: "{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}"
     image_templates:
-      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-amd64'
-      - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-arm64'
+      - "{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-amd64"
+      - "{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:v{{ .Version }}-arm64"
   - name_template: '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-{{ .Timestamp }}'
     image_templates:
       - '{{ .Env.REGISTRY }}/{{ .Env.IMAGE }}:{{ replace .Branch "/" "-" }}-{{ .ShortCommit }}-amd64-{{ .Timestamp }}'
@@ -104,14 +106,32 @@ signs:
     cmd: cosign
     signature: "${artifact}.sig"
     certificate: "${artifact}.pem"
-    args: ["sign-blob", "--yes", "--oidc-provider=github", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
+    args:
+      [
+        "sign-blob",
+        "--yes",
+        "--oidc-provider=github",
+        "--oidc-issuer=https://token.actions.githubusercontent.com",
+        "--output-certificate=${certificate}",
+        "--output-signature=${signature}",
+        "${artifact}",
+      ]
     artifacts: all
 docker_signs:
   - ids:
       - default
     artifacts: all
     cmd: cosign
-    args: ["sign", "--yes", "--oidc-provider=github", "--oidc-issuer=https://token.actions.githubusercontent.com", "--output-certificate=${certificate}", "--output-signature=${signature}", "${artifact}"]
+    args:
+      [
+        "sign",
+        "--yes",
+        "--oidc-provider=github",
+        "--oidc-issuer=https://token.actions.githubusercontent.com",
+        "--output-certificate=${certificate}",
+        "--output-signature=${signature}",
+        "${artifact}",
+      ]
 checksum:
   name_template: "checksums.txt"
 snapshot:

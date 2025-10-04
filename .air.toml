@@ -1,0 +1,3 @@
+[build]
+args_bin = ["server", "-l", "debug", "--log-caller"]
+stop_on_error = true

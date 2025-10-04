@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	"github.com/ekristen/go-telemetry"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -26,7 +27,8 @@ type FileResponseData struct {
 }
 
 type FileHandler struct {
-	DB interface{}
+	DB        interface{}
+	telemetry *telemetry.Telemetry
 }
 
 func (h *FileHandler) ID() string {
@@ -43,6 +45,7 @@ func (h *FileHandler) Path() string {
 
 func (h *FileHandler) SetOpts(opts *registry.RouteOptions) {
 	h.DB = opts.DB
+	h.telemetry = opts.Telemetry
 }
 
 func (h *FileHandler) UseCase() usecase.Interactor {
@@ -57,8 +60,13 @@ func (h *FileHandler) UseCase() usecase.Interactor {
 	return u
 }
 
-func (h *FileHandler) interact(_ context.Context, input FileRequest, output *FileResponseData) error {
+func (h *FileHandler) interact(ctx context.Context, input FileRequest, output *FileResponseData) error {
+	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.file")
+	defer span.End()
+
 	defer input.File.Close()
+
+	logger.Info().Msg("hashing file")
 
 	hasher := sha256.New()
 	if _, err := io.Copy(hasher, input.File); err != nil {
@@ -67,5 +75,10 @@ func (h *FileHandler) interact(_ context.Context, input FileRequest, output *Fil
 
 	hash := hasher.Sum(nil)
 	output.Hash = hex.EncodeToString(hash)
+
+	logger.Info().
+		Str("hash", output.Hash).
+		Msg("file hashed successfully")
+
 	return nil
 }
