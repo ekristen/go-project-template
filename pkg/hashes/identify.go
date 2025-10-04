@@ -58,9 +58,8 @@ func (h *IdentifyHandler) UseCase() usecase.Interactor {
 }
 
 func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, output *IdentifyResponse) error {
-	spanCtx, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.identify")
+	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.identify")
 	defer span.End()
-	ctx = spanCtx
 
 	logger.Info().
 		Str("hash", input.Hash).

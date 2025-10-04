@@ -53,9 +53,8 @@ func (h *ClearHandler) UseCase() usecase.Interactor {
 }
 
 func (h *ClearHandler) interact(ctx context.Context, _ ClearRequest, output *ClearResponse) error {
-	spanCtx, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.clear")
+	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.clear")
 	defer span.End()
-	ctx = spanCtx
 
 	logger.Info().Msg("clearing cookie")
 

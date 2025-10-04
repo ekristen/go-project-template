@@ -54,9 +54,8 @@ func (h *SetHandler) UseCase() usecase.Interactor {
 }
 
 func (h *SetHandler) interact(ctx context.Context, _ SetRequest, output *SetResponse) error {
-	spanCtx, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.set")
+	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.set")
 	defer span.End()
-	ctx = spanCtx
 
 	logger.Info().Msg("setting cookie")
 
