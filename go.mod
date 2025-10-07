@@ -3,7 +3,7 @@ module github.com/ekristen/go-project-template
 go 1.25.1
 
 require (
-	github.com/ekristen/go-telemetry v1.1.1
+	github.com/ekristen/go-telemetry v1.1.2
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/rancher/wrangler v1.1.2
@@ -58,7 +58,7 @@ require (
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250929231259-57b25ae835d4 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250929231259-57b25ae835d4 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
 	google.golang.org/grpc v1.76.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
