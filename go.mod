@@ -6,7 +6,7 @@ require (
 	github.com/ekristen/go-telemetry v1.1.2
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/gofrs/uuid/v5 v5.3.2
-	github.com/rancher/wrangler v1.1.2
+	github.com/rancher/wrangler/v3 v3.3.1
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggest/openapi-go v0.2.60
@@ -36,6 +36,7 @@ require (
 	github.com/prometheus/otlptranslator v0.0.2 // indirect
 	github.com/prometheus/procfs v0.17.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/swaggest/form/v5 v5.1.1 // indirect
 	github.com/swaggest/jsonschema-go v0.3.78 // indirect
 	github.com/swaggest/refl v1.4.0 // indirect

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/rancher/wrangler/pkg/signals"
+	"github.com/rancher/wrangler/v3/pkg/signals"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v3"
 
