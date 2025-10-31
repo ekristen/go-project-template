@@ -35,8 +35,9 @@ func Run(ctx context.Context, opts *Options) error {
 
 	// Add OpenTelemetry middleware for automatic HTTP instrumentation
 	var middlewares []func(http.Handler) http.Handler
-	middlewares = append(middlewares, chimiddleware.Recoverer)
-	middlewares = append(middlewares, chimiddleware.StripSlashes)
+	middlewares = append(middlewares,
+		chimiddleware.Recoverer,
+		chimiddleware.StripSlashes)
 
 	// Add otelchi middleware if telemetry is enabled
 	if opts.Telemetry != nil && opts.Telemetry.TracerProvider() != nil {
@@ -92,7 +93,7 @@ func Run(ctx context.Context, opts *Options) error {
 	// Wait for either context cancellation or server error
 	select {
 	case <-ctx.Done():
-		// Context cancelled, proceed to graceful shutdown
+		// Context canceled, proceed to graceful shutdown
 	case err := <-serverErr:
 		// Server failed to start or crashed
 		return fmt.Errorf("server error: %w", err)
