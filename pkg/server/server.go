@@ -64,16 +64,27 @@ func Run(ctx context.Context, opts *Options) error {
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 
+	// Channel to capture server errors
+	serverErr := make(chan error, 1)
+
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.WithError(err).Fatal("listen error")
+			logger.WithError(err).Error("listen error")
+			serverErr <- err
 		}
 	}()
 	logger.WithField("port", opts.Port).Info("starting api server")
 
 	logger.Debug("waiting for context to be done")
 
-	<-ctx.Done()
+	// Wait for either context cancellation or server error
+	select {
+	case <-ctx.Done():
+		// Context cancelled, proceed to graceful shutdown
+	case err := <-serverErr:
+		// Server failed to start or crashed
+		return fmt.Errorf("server error: %w", err)
+	}
 
 	logger.Info("shutting down api server")
 
