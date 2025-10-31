@@ -57,11 +57,10 @@ func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
 			TimestampFormat: "2006-01-02T15:04:05Z07:00",
 		})
 	} else {
-		// Use text format with colors for TTY
-		logrus.SetFormatter(&logrus.TextFormatter{
-			FullTimestamp:   true,
-			TimestampFormat: "2006-01-02T15:04:05Z07:00",
-			ForceColors:     true,
+		// Use custom console format with colors for TTY (similar to zerolog)
+		logrus.SetFormatter(&ConsoleFormatter{
+			TimestampFormat: "3:04:05PM",
+			NoColor:         false,
 		})
 	}
 
