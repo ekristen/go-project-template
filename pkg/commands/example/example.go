@@ -3,14 +3,14 @@ package example
 import (
 	"context"
 
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"
 
 	"github.com/ekristen/go-project-template/pkg/common"
 )
 
 func Execute(_ context.Context, _ *cli.Command) error {
-	log.Info().Msg("example called")
+	logrus.Info("example called")
 	return nil
 }
 

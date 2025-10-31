@@ -6,7 +6,7 @@ import (
 
 	"github.com/ekristen/go-telemetry/v2"
 	"github.com/gofrs/uuid/v5"
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -59,13 +59,13 @@ func (h *SetHandler) interact(ctx context.Context, _ SetRequest, output *SetResp
 	defer span.End()
 
 	// Logger will automatically pick up trace context from the span
-	logger := log.With().Str("component", "cookies.set").Logger()
+	logger := logrus.WithContext(ctx).WithField("component", "cookies.set")
 
-	logger.Info().Msg("setting cookie")
+	logger.Info("setting cookie")
 
 	output.SessionID = uuid.Must(uuid.NewV7()).String()
 
-	logger.Info().Str("session_id", output.SessionID).Msg("cookie set successfully")
+	logger.WithField("session_id", output.SessionID).Info("cookie set successfully")
 
 	return nil
 }

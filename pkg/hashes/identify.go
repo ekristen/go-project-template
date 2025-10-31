@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ekristen/go-telemetry/v2"
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/api"
@@ -63,12 +63,12 @@ func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, o
 	defer span.End()
 
 	// Logger will automatically pick up trace context from the span
-	logger := log.With().Str("component", "hashes.identify").Logger()
+	logger := logrus.WithContext(ctx).WithField("component", "hashes.identify")
 
-	logger.Info().
-		Str("hash", input.Hash).
-		Int("hash_length", len(input.Hash)).
-		Msg("identifying hash type")
+	logger.WithFields(logrus.Fields{
+		"hash":        input.Hash,
+		"hash_length": len(input.Hash),
+	}).Info("identifying hash type")
 
 	output.Hash = input.Hash
 	switch len(input.Hash) {
@@ -82,10 +82,10 @@ func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, o
 		output.Type = "unknown"
 	}
 
-	logger.Info().
-		Str("hash", input.Hash).
-		Str("identified_type", output.Type).
-		Msg("hash type identified successfully")
+	logger.WithFields(logrus.Fields{
+		"hash":            input.Hash,
+		"identified_type": output.Type,
+	}).Info("hash type identified successfully")
 
 	return nil
 }

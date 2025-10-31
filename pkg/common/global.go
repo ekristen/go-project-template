@@ -4,10 +4,9 @@ import (
 	"context"
 	"os"
 
-	zerologhook "github.com/ekristen/go-telemetry/hooks/zerolog/v2"
+	logrushook "github.com/ekristen/go-telemetry/hooks/logrus/v2"
 	"github.com/ekristen/go-telemetry/v2"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"
 	"golang.org/x/term"
 )
@@ -43,30 +42,35 @@ func Flags() []cli.Flag {
 func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
 	// Parse log level
 	logLevel := c.String("log-level")
-	level, err := zerolog.ParseLevel(logLevel)
+	level, err := logrus.ParseLevel(logLevel)
 	if err != nil {
 		return ctx, err
 	}
 
-	// Configure global zerolog level
-	zerolog.SetGlobalLevel(level)
+	// Configure global logrus level
+	logrus.SetLevel(level)
 
-	// Set up console writer based on format preference and terminal detection
+	// Set up formatter based on format preference and terminal detection
 	if c.String("log-format") == "json" || (!term.IsTerminal(int(os.Stdout.Fd())) && c.String("log-format") == "auto") {
 		// Use JSON format for non-TTY or when explicitly requested
-		log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
+		logrus.SetFormatter(&logrus.JSONFormatter{
+			TimestampFormat: "2006-01-02T15:04:05Z07:00",
+		})
 	} else {
-		// Use console format with colors for TTY
-		consoleWriter := zerolog.ConsoleWriter{
-			Out:        os.Stdout,
-			TimeFormat: "2006-01-02T15:04:05Z07:00",
-		}
-		log.Logger = zerolog.New(consoleWriter).With().Timestamp().Logger()
+		// Use text format with colors for TTY
+		logrus.SetFormatter(&logrus.TextFormatter{
+			FullTimestamp:   true,
+			TimestampFormat: "2006-01-02T15:04:05Z07:00",
+			ForceColors:     true,
+		})
 	}
 
-	// Configure caller information
+	// Configure output
+	logrus.SetOutput(os.Stdout)
+
+	// Configure caller information - MUST be set before adding hooks
 	if c.Bool("log-caller") {
-		log.Logger = log.Logger.With().Caller().Logger()
+		logrus.SetReportCaller(true)
 	}
 
 	// Initialize telemetry (this will set up OTEL providers)
@@ -78,18 +82,18 @@ func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
 
 	telemetryInstance, err = telemetry.New(ctx, opts)
 	if err != nil {
-		log.Warn().Err(err).Msg("failed to initialize telemetry")
+		logrus.WithError(err).Warn("failed to initialize telemetry")
 	}
 
 	// Attach OTel hook to the logger if telemetry was initialized successfully
 	if telemetryInstance != nil && telemetryInstance.LoggerProvider() != nil {
-		hook := zerologhook.New(
+		hook := logrushook.New(
 			telemetryInstance.ServiceName(),
 			telemetryInstance.ServiceVersion(),
 			telemetryInstance.LoggerProvider(),
 		)
 		if hook != nil {
-			log.Logger = log.Logger.Hook(hook)
+			logrus.AddHook(hook)
 		}
 	}
 

@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/ekristen/go-telemetry/v2"
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -68,9 +68,9 @@ func (h *FileHandler) interact(ctx context.Context, input FileRequest, output *F
 	defer input.File.Close()
 
 	// Logger will automatically pick up trace context from the span
-	logger := log.With().Str("component", "hashes.file").Logger()
+	logger := logrus.WithContext(ctx).WithField("component", "hashes.file")
 
-	logger.Info().Msg("hashing file")
+	logger.Info("hashing file")
 
 	hasher := sha256.New()
 	if _, err := io.Copy(hasher, input.File); err != nil {
@@ -80,9 +80,7 @@ func (h *FileHandler) interact(ctx context.Context, input FileRequest, output *F
 	hash := hasher.Sum(nil)
 	output.Hash = hex.EncodeToString(hash)
 
-	logger.Info().
-		Str("hash", output.Hash).
-		Msg("file hashed successfully")
+	logger.WithField("hash", output.Hash).Info("file hashed successfully")
 
 	return nil
 }
