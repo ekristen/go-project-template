@@ -17,6 +17,10 @@ github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894
 github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798/go.mod h1:dst5fohLKi7o2deHhrzbW6uBOy5Avfu7pPD19lP1FsU=
 github.com/ekristen/go-telemetry/v2 v2.0.1-0.20251031013532-683c62894798 h1:TdXGlLmzY+zq/EJuoH4uM7z5DD+Llrh20nzf0/Xa1Oc=
 github.com/ekristen/go-telemetry/v2 v2.0.1-0.20251031013532-683c62894798/go.mod h1:YBTZM9Pgb0FJ+4DIBks2tDOhMtJ7CUnBy4juVwN29dA=
+github.com/ekristen/go-telemetry/v2 v2.1.0 h1:Zw5DTp78JMiKBvwHzL43CmYOeXWK0HzEGH/LH10Inp0=
+github.com/ekristen/go-telemetry/v2 v2.1.0/go.mod h1:YBTZM9Pgb0FJ+4DIBks2tDOhMtJ7CUnBy4juVwN29dA=
+github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
+github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/go-chi/chi/v5 v5.2.3 h1:WQIt9uxdsAbgIYgid+BpYc+liqQZGMHRaUwp0JUcvdE=
 github.com/go-chi/chi/v5 v5.2.3/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
@@ -63,6 +67,8 @@ github.com/prometheus/procfs v0.19.2 h1:zUMhqEW66Ex7OXIiDkll3tl9a1ZdilUOd/F6ZXw4
 github.com/prometheus/procfs v0.19.2/go.mod h1:M0aotyiemPhBCM0z5w87kL22CxfcH05ZpYlu+b4J7mw=
 github.com/rancher/wrangler v1.1.2 h1:oXbXo9k7y/H4drUpb4RM1c++vT9O3rpoNEfyusGykiU=
 github.com/rancher/wrangler v1.1.2/go.mod h1:2k9MyhlBdjcutcBGoOJSUAz0HgDAXnMjv81d3n/AaQc=
+github.com/riandyrn/otelchi v0.12.2 h1:6QhGv0LVw/dwjtPd12mnNrl0oEQF4ZAlmHcnlTYbeAg=
+github.com/riandyrn/otelchi v0.12.2/go.mod h1:weZZeUJURvtCcbWsdb7Y6F8KFZGedJlSrgUjq9VirV8=
 github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0tI/otEQ=
 github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7so1lCWt35ZSgc=
 github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 h1:levPcBfnazlA1CyCMC3asL/QLZkq9pa8tQZOH513zQw=

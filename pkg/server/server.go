@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ekristen/go-telemetry/v2"
+	"github.com/riandyrn/otelchi"
 	"github.com/sirupsen/logrus"
 
 	"github.com/go-chi/chi/v5"
@@ -32,10 +33,21 @@ func Run(ctx context.Context, opts *Options) error {
 
 	r := router.Configure()
 
-	r.Wrap(
-		chimiddleware.Recoverer,
-		chimiddleware.StripSlashes,
-	)
+	// Add OpenTelemetry middleware for automatic HTTP instrumentation
+	var middlewares []func(http.Handler) http.Handler
+	middlewares = append(middlewares, chimiddleware.Recoverer)
+	middlewares = append(middlewares, chimiddleware.StripSlashes)
+
+	// Add otelchi middleware if telemetry is enabled
+	if opts.Telemetry != nil && opts.Telemetry.TracerProvider() != nil {
+		middlewares = append(middlewares, otelchi.Middleware(
+			opts.Telemetry.ServiceName(),
+			otelchi.WithTracerProvider(opts.Telemetry.TracerProvider()),
+			otelchi.WithChiRoutes(r.Router),
+		))
+	}
+
+	r.Wrap(middlewares...)
 
 	routeOpts := &registry.RouteOptions{
 		Telemetry: opts.Telemetry,

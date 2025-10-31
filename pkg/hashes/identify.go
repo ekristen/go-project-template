@@ -81,6 +81,7 @@ func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, o
 	default:
 		output.Type = "unknown"
 	}
+	span.AddEvent("type identified")
 
 	logger.WithFields(logrus.Fields{
 		"hash":            input.Hash,

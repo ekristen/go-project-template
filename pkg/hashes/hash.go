@@ -73,11 +73,15 @@ func (h *FileHandler) interact(ctx context.Context, input FileRequest, output *F
 	logger.Info("hashing file")
 
 	hasher := sha256.New()
+	span.AddEvent("sha256.New")
+
 	if _, err := io.Copy(hasher, input.File); err != nil {
 		return err
 	}
+	span.AddEvent("io.copy")
 
 	hash := hasher.Sum(nil)
+	span.AddEvent("sha256.Sum")
 	output.Hash = hex.EncodeToString(hash)
 
 	logger.WithField("hash", output.Hash).Info("file hashed successfully")
