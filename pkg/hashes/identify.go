@@ -4,7 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/api"
@@ -58,13 +59,16 @@ func (h *IdentifyHandler) UseCase() usecase.Interactor {
 }
 
 func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, output *IdentifyResponse) error {
-	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.identify")
+	ctx, span := h.telemetry.StartSpan(ctx, "hashes.identify")
 	defer span.End()
 
-	logger.Info().
-		Str("hash", input.Hash).
-		Int("hash_length", len(input.Hash)).
-		Msg("identifying hash type")
+	// Logger will automatically pick up trace context from the span
+	logger := logrus.WithContext(ctx).WithField("component", "hashes.identify")
+
+	logger.WithFields(logrus.Fields{
+		"hash":        input.Hash,
+		"hash_length": len(input.Hash),
+	}).Info("identifying hash type")
 
 	output.Hash = input.Hash
 	switch len(input.Hash) {
@@ -77,11 +81,12 @@ func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, o
 	default:
 		output.Type = "unknown"
 	}
+	span.AddEvent("type identified")
 
-	logger.Info().
-		Str("hash", input.Hash).
-		Str("identified_type", output.Type).
-		Msg("hash type identified successfully")
+	logger.WithFields(logrus.Fields{
+		"hash":            input.Hash,
+		"identified_type": output.Type,
+	}).Info("hash type identified successfully")
 
 	return nil
 }

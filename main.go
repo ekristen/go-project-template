@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/rancher/wrangler/pkg/signals"
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v3"
 
 	"github.com/ekristen/go-project-template/pkg/common"
@@ -24,12 +24,12 @@ func main() {
 			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			if err := common.Shutdown(shutdownCtx); err != nil {
-				log.Warn().Err(err).Msg("failed to shutdown telemetry")
+				logrus.WithError(err).Warn("failed to shutdown telemetry")
 			}
 
 			if r := recover(); r != nil {
-				// log panics using zerolog and set exit code
-				log.Error().Interface("panic", r).Msg("panic recovered")
+				// log panics using logrus and set exit code
+				logrus.WithField("panic", r).Error("panic recovered")
 				exitCode = 1
 			}
 		}()
@@ -43,7 +43,7 @@ func main() {
 			},
 			Commands: common.GetCommands(),
 			CommandNotFound: func(ctx context.Context, command *cli.Command, s string) {
-				log.Error().Str("command", s).Msg("command not found")
+				logrus.WithField("command", s).Error("command not found")
 			},
 			EnableShellCompletion: true,
 			Before:                common.Before,
@@ -52,7 +52,7 @@ func main() {
 
 		ctx := signals.SetupSignalContext()
 		if err := app.Run(ctx, os.Args); err != nil {
-			log.Error().Err(err).Msg("fatal error")
+			logrus.WithError(err).Error("fatal error")
 			exitCode = 1
 		}
 	}()

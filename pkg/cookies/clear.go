@@ -4,7 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -53,16 +54,19 @@ func (h *ClearHandler) UseCase() usecase.Interactor {
 }
 
 func (h *ClearHandler) interact(ctx context.Context, _ ClearRequest, output *ClearResponse) error {
-	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.clear")
+	ctx, span := h.telemetry.StartSpan(ctx, "cookies.clear")
 	defer span.End()
 
-	logger.Info().Msg("clearing cookie")
+	// Logger will automatically pick up trace context from the span
+	logger := logrus.WithContext(ctx).WithField("component", "cookies.clear")
+
+	logger.Info("clearing cookie")
 
 	// Note: this isn't necessary, but it's just here for some content.
 	// The max-age=-1 is what actually deletes the cookie.
 	output.SessionID = "delete"
 
-	logger.Info().Str("session_id", output.SessionID).Msg("cookie cleared successfully")
+	logger.WithField("session_id", output.SessionID).Info("cookie cleared successfully")
 
 	return nil
 }

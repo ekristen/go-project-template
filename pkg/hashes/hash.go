@@ -8,7 +8,8 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -61,24 +62,29 @@ func (h *FileHandler) UseCase() usecase.Interactor {
 }
 
 func (h *FileHandler) interact(ctx context.Context, input FileRequest, output *FileResponseData) error {
-	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.file")
+	ctx, span := h.telemetry.StartSpan(ctx, "hashes.file")
 	defer span.End()
 
 	defer input.File.Close()
 
-	logger.Info().Msg("hashing file")
+	// Logger will automatically pick up trace context from the span
+	logger := logrus.WithContext(ctx).WithField("component", "hashes.file")
+
+	logger.Info("hashing file")
 
 	hasher := sha256.New()
+	span.AddEvent("sha256.New")
+
 	if _, err := io.Copy(hasher, input.File); err != nil {
 		return err
 	}
+	span.AddEvent("io.copy")
 
 	hash := hasher.Sum(nil)
+	span.AddEvent("sha256.Sum")
 	output.Hash = hex.EncodeToString(hash)
 
-	logger.Info().
-		Str("hash", output.Hash).
-		Msg("file hashed successfully")
+	logger.WithField("hash", output.Hash).Info("file hashed successfully")
 
 	return nil
 }

@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ekristen/go-telemetry"
-	"github.com/rs/zerolog/log"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/riandyrn/otelchi"
+	"github.com/sirupsen/logrus"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -28,14 +29,26 @@ type Options struct {
 }
 
 func Run(ctx context.Context, opts *Options) error {
-	logger := log.With().Str("component", "server").Logger()
+	logger := logrus.WithField("component", "server")
 
 	r := router.Configure()
 
-	r.Wrap(
+	// Add OpenTelemetry middleware for automatic HTTP instrumentation
+	var middlewares []func(http.Handler) http.Handler
+	middlewares = append(middlewares,
 		chimiddleware.Recoverer,
-		chimiddleware.StripSlashes,
-	)
+		chimiddleware.StripSlashes)
+
+	// Add otelchi middleware if telemetry is enabled
+	if opts.Telemetry != nil && opts.Telemetry.TracerProvider() != nil {
+		middlewares = append(middlewares, otelchi.Middleware(
+			opts.Telemetry.ServiceName(),
+			otelchi.WithTracerProvider(opts.Telemetry.TracerProvider()),
+			otelchi.WithChiRoutes(r.Router),
+		))
+	}
+
+	r.Wrap(middlewares...)
 
 	routeOpts := &registry.RouteOptions{
 		Telemetry: opts.Telemetry,
@@ -45,7 +58,7 @@ func Run(ctx context.Context, opts *Options) error {
 	// but still allow all the fancy magic of rest service to take place.
 	r.Group(func(r chi.Router) {
 		for id, h := range registry.GetRegistry() {
-			logger.Debug().Str("id", id).Msg("registering route")
+			logger.WithField("id", id).Debug("registering route")
 			router.Register(r, h, routeOpts)
 		}
 	})
@@ -64,24 +77,35 @@ func Run(ctx context.Context, opts *Options) error {
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 
+	// Channel to capture server errors
+	serverErr := make(chan error, 1)
+
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Fatal().Err(err).Msg("listen error")
+			logger.WithError(err).Error("listen error")
+			serverErr <- err
 		}
 	}()
-	logger.Info().Int("port", opts.Port).Msg("starting api server")
+	logger.WithField("port", opts.Port).Info("starting api server")
 
-	logger.Debug().Msg("waiting for context to be done")
+	logger.Debug("waiting for context to be done")
 
-	<-ctx.Done()
+	// Wait for either context cancellation or server error
+	select {
+	case <-ctx.Done():
+		// Context canceled, proceed to graceful shutdown
+	case err := <-serverErr:
+		// Server failed to start or crashed
+		return fmt.Errorf("server error: %w", err)
+	}
 
-	logger.Info().Msg("shutting down api server")
+	logger.Info("shutting down api server")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(shutdownCtx); err != nil {
-		logger.Error().Err(err).Msg("unable to shutdown the api server gracefully")
+		logger.WithError(err).Error("unable to shutdown the api server gracefully")
 		return err
 	}
 
