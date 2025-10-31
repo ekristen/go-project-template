@@ -3,7 +3,7 @@ module github.com/ekristen/go-project-template
 go 1.25.1
 
 require (
-	github.com/ekristen/go-telemetry v1.1.2
+	github.com/ekristen/go-telemetry/v2 v2.1.0
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/rancher/wrangler v1.1.2
