@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/ekristen/go-telemetry"
-	tzerolog "github.com/ekristen/go-telemetry/logger/zerolog"
+	zerologhook "github.com/ekristen/go-telemetry/hooks/zerolog/v2"
+	"github.com/ekristen/go-telemetry/v2"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v3"
@@ -69,21 +69,28 @@ func Before(ctx context.Context, c *cli.Command) (context.Context, error) {
 		log.Logger = log.Logger.With().Caller().Logger()
 	}
 
-	// Initialize telemetry with zerolog wrapper using the configured global logger
+	// Initialize telemetry (this will set up OTEL providers)
 	opts := &telemetry.Options{
 		ServiceName:    AppVersion.Name,
 		ServiceVersion: AppVersion.Summary,
-		Logger: tzerolog.Wrap(log.Logger, tzerolog.WrapOptions{
-			ServiceName:    AppVersion.Name,
-			ServiceVersion: AppVersion.Summary,
-		}),
-		BatchExport: true, // False by default, true batches for production
+		BatchExport:    true, // False by default, true batches for production
 	}
 
-	// Initialize telemetry (this will set up OTEL providers)
 	telemetryInstance, err = telemetry.New(ctx, opts)
 	if err != nil {
 		log.Warn().Err(err).Msg("failed to initialize telemetry")
+	}
+
+	// Attach OTel hook to the logger if telemetry was initialized successfully
+	if telemetryInstance != nil && telemetryInstance.LoggerProvider() != nil {
+		hook := zerologhook.New(
+			telemetryInstance.ServiceName(),
+			telemetryInstance.ServiceVersion(),
+			telemetryInstance.LoggerProvider(),
+		)
+		if hook != nil {
+			log.Logger = log.Logger.Hook(hook)
+		}
 	}
 
 	return ctx, nil

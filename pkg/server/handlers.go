@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/rs/zerolog/log"
 
 	"github.com/ekristen/go-project-template/pkg/common"
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -37,8 +38,11 @@ func (h *RootHandler) SetOpts(opts *registry.RouteOptions) {
 }
 
 func (h *RootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	_, span, logger := h.telemetry.StartSpanWithLogger(r.Context(), "server.root")
+	ctx, span := h.telemetry.StartSpan(r.Context(), "server.root")
 	defer span.End()
+
+	// Logger will automatically pick up trace context from the span
+	logger := log.With().Str("component", "server.root").Logger()
 
 	logger.Info().Msg("serving root endpoint")
 
@@ -55,4 +59,6 @@ func (h *RootHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Str("app_version", common.AppVersion.Summary).
 			Msg("root endpoint served successfully")
 	}
+
+	_ = ctx // Mark as used
 }

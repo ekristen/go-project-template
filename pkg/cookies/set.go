@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
 	"github.com/gofrs/uuid/v5"
+	"github.com/rs/zerolog/log"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -54,8 +55,11 @@ func (h *SetHandler) UseCase() usecase.Interactor {
 }
 
 func (h *SetHandler) interact(ctx context.Context, _ SetRequest, output *SetResponse) error {
-	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.set")
+	ctx, span := h.telemetry.StartSpan(ctx, "cookies.set")
 	defer span.End()
+
+	// Logger will automatically pick up trace context from the span
+	logger := log.With().Str("component", "cookies.set").Logger()
 
 	logger.Info().Msg("setting cookie")
 

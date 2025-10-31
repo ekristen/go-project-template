@@ -4,7 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/rs/zerolog/log"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/api"
@@ -58,8 +59,11 @@ func (h *IdentifyHandler) UseCase() usecase.Interactor {
 }
 
 func (h *IdentifyHandler) interact(ctx context.Context, input IdentifyRequest, output *IdentifyResponse) error {
-	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "hashes.identify")
+	ctx, span := h.telemetry.StartSpan(ctx, "hashes.identify")
 	defer span.End()
+
+	// Logger will automatically pick up trace context from the span
+	logger := log.With().Str("component", "hashes.identify").Logger()
 
 	logger.Info().
 		Str("hash", input.Hash).

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-chi/chi/v5"

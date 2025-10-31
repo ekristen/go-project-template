@@ -4,7 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ekristen/go-telemetry"
+	"github.com/ekristen/go-telemetry/v2"
+	"github.com/rs/zerolog/log"
 	"github.com/swaggest/usecase"
 
 	"github.com/ekristen/go-project-template/pkg/registry"
@@ -53,8 +54,11 @@ func (h *ClearHandler) UseCase() usecase.Interactor {
 }
 
 func (h *ClearHandler) interact(ctx context.Context, _ ClearRequest, output *ClearResponse) error {
-	_, span, logger := h.telemetry.StartSpanWithLogger(ctx, "cookies.clear")
+	ctx, span := h.telemetry.StartSpan(ctx, "cookies.clear")
 	defer span.End()
+
+	// Logger will automatically pick up trace context from the span
+	logger := log.With().Str("component", "cookies.clear").Logger()
 
 	logger.Info().Msg("clearing cookie")
 

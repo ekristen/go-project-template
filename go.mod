@@ -3,7 +3,8 @@ module github.com/ekristen/go-project-template
 go 1.25.1
 
 require (
-	github.com/ekristen/go-telemetry v1.1.2
+	github.com/ekristen/go-telemetry/hooks/zerolog/v2 v2.0.0-20251031013532-683c62894798
+	github.com/ekristen/go-telemetry/v2 v2.0.1-0.20251031013532-683c62894798
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/gofrs/uuid/v5 v5.3.2
 	github.com/rancher/wrangler v1.1.2
@@ -13,7 +14,7 @@ require (
 	github.com/swaggest/rest v0.2.75
 	github.com/swaggest/usecase v1.3.1
 	github.com/urfave/cli/v3 v3.5.0
-	golang.org/x/term v0.35.0
+	golang.org/x/term v0.36.0
 )
 
 require (
@@ -32,9 +33,9 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.67.1 // indirect
+	github.com/prometheus/common v0.67.2 // indirect
 	github.com/prometheus/otlptranslator v0.0.2 // indirect
-	github.com/prometheus/procfs v0.18.0 // indirect
+	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 // indirect
 	github.com/swaggest/form/v5 v5.1.1 // indirect
 	github.com/swaggest/jsonschema-go v0.3.78 // indirect
@@ -54,9 +55,9 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.8.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
-	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250929231259-57b25ae835d4 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
 	google.golang.org/grpc v1.76.0 // indirect
