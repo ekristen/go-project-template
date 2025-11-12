@@ -6,7 +6,7 @@ require (
 	github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798
 	github.com/ekristen/go-telemetry/v2 v2.1.0
 	github.com/go-chi/chi/v5 v5.2.3
-	github.com/gofrs/uuid/v5 v5.3.2
+	github.com/gofrs/uuid/v5 v5.4.0
 	github.com/rancher/wrangler v1.1.2
 	github.com/riandyrn/otelchi v0.12.2
 	github.com/sirupsen/logrus v1.9.3
