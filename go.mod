@@ -3,7 +3,7 @@ module github.com/ekristen/go-project-template
 go 1.25.1
 
 require (
-	github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798
+	github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20260220133336-1e13e3ab873b
 	github.com/ekristen/go-telemetry/v2 v2.1.0
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/gofrs/uuid/v5 v5.4.0
