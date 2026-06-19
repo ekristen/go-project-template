@@ -62,8 +62,8 @@ github.com/prometheus/procfs v0.20.1 h1:XwbrGOIplXW/AU3YhIhLODXMJYyC1isLFfYCsTEy
 github.com/prometheus/procfs v0.20.1/go.mod h1:o9EMBZGRyvDrSPH1RqdxhojkuXstoe4UlK79eF5TGGo=
 github.com/rancher/wrangler v1.1.2 h1:oXbXo9k7y/H4drUpb4RM1c++vT9O3rpoNEfyusGykiU=
 github.com/rancher/wrangler v1.1.2/go.mod h1:2k9MyhlBdjcutcBGoOJSUAz0HgDAXnMjv81d3n/AaQc=
-github.com/riandyrn/otelchi v0.12.2 h1:6QhGv0LVw/dwjtPd12mnNrl0oEQF4ZAlmHcnlTYbeAg=
-github.com/riandyrn/otelchi v0.12.2/go.mod h1:weZZeUJURvtCcbWsdb7Y6F8KFZGedJlSrgUjq9VirV8=
+github.com/riandyrn/otelchi v0.12.3 h1:KW9gA+97d6mExk8vbh0FRwb2biUvpyYlc8YuxP1Oap0=
+github.com/riandyrn/otelchi v0.12.3/go.mod h1:weZZeUJURvtCcbWsdb7Y6F8KFZGedJlSrgUjq9VirV8=
 github.com/rogpeppe/go-internal v1.14.1 h1:UQB4HGPB6osV0SQTLymcB4TgvyWu6ZyliaW0tI/otEQ=
 github.com/rogpeppe/go-internal v1.14.1/go.mod h1:MaRKkUm5W0goXpeCfT7UZI6fk/L7L7so1lCWt35ZSgc=
 github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 h1:levPcBfnazlA1CyCMC3asL/QLZkq9pa8tQZOH513zQw=
