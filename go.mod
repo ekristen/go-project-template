@@ -1,13 +1,13 @@
 module github.com/ekristen/go-project-template
 
-go 1.25.1
+go 1.26.0
 
 require (
 	github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798
 	github.com/ekristen/go-telemetry/v2 v2.1.9
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/gofrs/uuid/v5 v5.4.0
-	github.com/rancher/wrangler v1.1.2
+	github.com/rancher/wrangler/v3 v3.7.0
 	github.com/riandyrn/otelchi v0.12.3
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
@@ -59,7 +59,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/grpc v1.82.1 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
