@@ -12,8 +12,8 @@ github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798 h1:E5308G7iFXO3wq5f00H0o4DeuHinOCewMXXY4rRxkvM=
-github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798/go.mod h1:dst5fohLKi7o2deHhrzbW6uBOy5Avfu7pPD19lP1FsU=
+github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20260803184201-8f33ed318c68 h1:64Z1C1HE1sBNS/N1fzVpHuEBPgLJ03g+c7wo0cGl2kM=
+github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20260803184201-8f33ed318c68/go.mod h1:qLhlH5PtYJoDC7E0uadReQvYXdrMzok4uURrajzIJpY=
 github.com/ekristen/go-telemetry/v2 v2.1.10 h1:OOUFr6nqlYQPof/rSzm+NDqyhhErPEsuxjlHj7uKQz0=
 github.com/ekristen/go-telemetry/v2 v2.1.10/go.mod h1:5RdClxX9Yx+dIHcIGU/BWKLoz84SxSPslAg+yuQ4qv0=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=
