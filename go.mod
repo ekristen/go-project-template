@@ -1,13 +1,13 @@
 module github.com/ekristen/go-project-template
 
-go 1.25.1
+go 1.26.0
 
 require (
 	github.com/ekristen/go-telemetry/hooks/logrus/v2 v2.0.0-20251031013532-683c62894798
 	github.com/ekristen/go-telemetry/v2 v2.1.10
 	github.com/go-chi/chi/v5 v5.3.2
 	github.com/gofrs/uuid/v5 v5.5.1
-	github.com/rancher/wrangler v1.1.2
+	github.com/rancher/wrangler/v3 v3.7.1
 	github.com/riandyrn/otelchi v0.12.3
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
